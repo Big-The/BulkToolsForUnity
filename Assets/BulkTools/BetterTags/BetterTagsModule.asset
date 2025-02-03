@@ -38,6 +38,5 @@ MonoBehaviour:
   - WindowsStandalone32
   - WindowsStandalone64
   - XboxOne
-  dependencies:
-  - TestModule
+  dependencies: []
   experimental: 0

@@ -9,7 +9,7 @@ namespace BTools.Management.Editor
 {
     public class BulkToolsManagementWindow : EditorWindow
     {
-        public const string packageName = "Bulk Tools";
+        public const string packageName = "com.bigthe.bulktools";
         public const string packageRootFolder = "Bulk Tools";
         public const string assetsRootFolder = "BulkTools";
 
@@ -229,6 +229,7 @@ namespace BTools.Management.Editor
             modules = new List<ModuleMetaData>();
             string searchPath = (InPackageMode ? "Packages" : "Assets");
             searchPath = Path.Combine(searchPath, InPackageMode ? packageRootFolder : assetsRootFolder);
+            searchPath.Replace('\\', '/');
             foreach(var moduleGUID in AssetDatabase.FindAssets("t:moduleMetaData", new string[] { searchPath }))
             {
                 modules.Add(AssetDatabase.LoadAssetAtPath<ModuleMetaData>(AssetDatabase.GUIDToAssetPath(moduleGUID)));
