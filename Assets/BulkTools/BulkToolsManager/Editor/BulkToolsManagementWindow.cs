@@ -229,8 +229,21 @@ namespace BTools.Management.Editor
             modules = new List<ModuleMetaData>();
             string searchPath = (InPackageMode ? "Packages" : "Assets");
             searchPath = Path.Combine(searchPath, InPackageMode ? packageRootFolder : assetsRootFolder);
-            searchPath.Replace('\\', '/');
-            foreach(var moduleGUID in AssetDatabase.FindAssets("t:moduleMetaData", new string[] { searchPath }))
+            searchPath.Replace(Path.PathSeparator, '/');
+            string finalSearchPath = "";
+            for (int i = 0; i < searchPath.Length; i++) 
+            {
+                if (searchPath[i] == '\\')
+                {
+                    finalSearchPath += '/';
+                }
+                else 
+                {
+                    finalSearchPath += searchPath[i];
+                }
+
+            }
+            foreach (var moduleGUID in AssetDatabase.FindAssets("t:moduleMetaData", new string[] { finalSearchPath }))
             {
                 modules.Add(AssetDatabase.LoadAssetAtPath<ModuleMetaData>(AssetDatabase.GUIDToAssetPath(moduleGUID)));
             }
