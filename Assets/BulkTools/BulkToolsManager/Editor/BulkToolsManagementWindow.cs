@@ -10,7 +10,7 @@ namespace BTools.Management.Editor
     public class BulkToolsManagementWindow : EditorWindow
     {
         public const string packageName = "BulkTools";
-        public const string packageRootFolder = "BulkTools";
+        public const string packageRootFolder = "Bulk Tools";
         public const string assetsRootFolder = "BulkTools";
 
         public static bool InPackageMode { get; private set; }
