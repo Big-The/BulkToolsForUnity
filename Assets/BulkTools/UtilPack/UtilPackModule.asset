@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 11500000, guid: 8ab3f9640c22f534bb6f7cf289be858a, type: 3}
-  m_Name: StateMachinesModule
+  m_Name: UtilPackModule
   m_EditorClassIdentifier: 
-  moduleName: State Machines
-  description: Includes a simple state machine class that can be used in most simple
-    state machine use cases.
-  normalAssembly: Runtime/StateMachinesRuntime.asmdef
+  moduleName: Util Pack
+  description: "Includes multiple simple util extension methods.\nExpanded systems
+    include: \n- List Extensions (Shuffling)\n- RandomExtras (Sequences, Weighted
+    Random)\n- Coroutines With Results"
+  normalAssembly: Runtime/UtilPackRuntime.asmdef
   editorAssembly: 
   supportedPlatforms:
   - Android

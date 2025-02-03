@@ -10,12 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 11500000, guid: 8ab3f9640c22f534bb6f7cf289be858a, type: 3}
-  m_Name: StateMachinesModule
+  m_Name: ObjectPoolingModule
   m_EditorClassIdentifier: 
-  moduleName: State Machines
-  description: Includes a simple state machine class that can be used in most simple
-    state machine use cases.
-  normalAssembly: Runtime/StateMachinesRuntime.asmdef
+  moduleName: Object Pooling
+  description: Provides a premade component based solution for object pooling.
+  normalAssembly: Runtime/ObjectPoolingRuntime.asmdef
   editorAssembly: 
   supportedPlatforms:
   - Android
