@@ -134,21 +134,28 @@ namespace BTools.Management.Editor
             EditorGUI.EndDisabledGroup();
 
             //Platform specific enabled states:
-            platformsShown[moduleIndex] = EditorGUILayout.Foldout(platformsShown[moduleIndex], new GUIContent("Include on Platforms:", "Platforms that this module should be included on."));
-            EditorGUI.BeginDisabledGroup(!moduleEnabled[moduleIndex]);//If the whole module is disabled it's platforms can't be modified
-            if (platformsShown[moduleIndex]) 
+            if (module.normalAssembly.Length > 0)
             {
-                EditorGUI.indentLevel++;
-           
-                for(int i = 0; i < enabledPlatforms[moduleIndex].Count; i++) 
+                platformsShown[moduleIndex] = EditorGUILayout.Foldout(platformsShown[moduleIndex], new GUIContent("Include on Platforms:", "Platforms that this module should be included on."));
+                EditorGUI.BeginDisabledGroup(!moduleEnabled[moduleIndex]);//If the whole module is disabled it's platforms can't be modified
+                if (platformsShown[moduleIndex])
                 {
-                    EditorGUI.BeginDisabledGroup(platformsDependedOn.Contains(module.supportedPlatforms[i]));//If this module is depended on on this platform it can't be changed here.
-                    enabledPlatforms[moduleIndex][i] = EditorGUILayout.Toggle(new GUIContent(module.supportedPlatforms[i], " " + module.supportedPlatforms[i] + " "), enabledPlatforms[moduleIndex][i]);
-                    EditorGUI.EndDisabledGroup();
+                    EditorGUI.indentLevel++;
+
+                    for (int i = 0; i < enabledPlatforms[moduleIndex].Count; i++)
+                    {
+                        EditorGUI.BeginDisabledGroup(platformsDependedOn.Contains(module.supportedPlatforms[i]));//If this module is depended on on this platform it can't be changed here.
+                        enabledPlatforms[moduleIndex][i] = EditorGUILayout.Toggle(new GUIContent(module.supportedPlatforms[i], " " + module.supportedPlatforms[i] + " "), enabledPlatforms[moduleIndex][i]);
+                        EditorGUI.EndDisabledGroup();
+                    }
+                    EditorGUI.indentLevel--;
                 }
-                EditorGUI.indentLevel--;
+                EditorGUI.EndDisabledGroup();
             }
-            EditorGUI.EndDisabledGroup();
+            else 
+            {
+                EditorGUILayout.LabelField("Module does not include a runtime assembly, target platforms are irrelevant.");
+            }
 
             //Update dependencies if this module has been updated
             if (EditorGUI.EndChangeCheck() && moduleEnabled[moduleIndex]) 

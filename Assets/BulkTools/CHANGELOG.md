@@ -3,8 +3,17 @@
 ## [0.0.6]
 
 ### Fixes:
+
+
 ### Added:
+- Added More Attributes module
+  - ReadOnly
+- Added Simple Editor Tools module
+  - Children Sorting
+
 ### Updated:
+
+
 
 
 ## [0.0.5]
