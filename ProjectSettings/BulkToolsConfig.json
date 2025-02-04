@@ -1,0 +1,114 @@
+{
+    "modules": [
+        {
+            "moduleName": "BetterTagsModule",
+            "moduleEnabled": true,
+            "enabledPlatforms": [
+                "Android",
+                "iOS",
+                "LinuxStandalone64",
+                "PS4",
+                "PS5",
+                "Switch",
+                "WebGL",
+                "WindowsStandalone64",
+                "XboxOne"
+            ]
+        },
+        {
+            "moduleName": "MoreAttributesModule",
+            "moduleEnabled": true,
+            "enabledPlatforms": [
+                "Android",
+                "iOS",
+                "LinuxStandalone64",
+                "PS4",
+                "PS5",
+                "Switch",
+                "WebGL",
+                "WindowsStandalone64",
+                "XboxOne"
+            ]
+        },
+        {
+            "moduleName": "ObjectPoolingModule",
+            "moduleEnabled": true,
+            "enabledPlatforms": [
+                "Android",
+                "iOS",
+                "LinuxStandalone64",
+                "PS4",
+                "PS5",
+                "Switch",
+                "WebGL",
+                "WindowsStandalone64",
+                "XboxOne"
+            ]
+        },
+        {
+            "moduleName": "SimpleEditorToolsModule",
+            "moduleEnabled": true,
+            "enabledPlatforms": []
+        },
+        {
+            "moduleName": "SingletonToolsModule",
+            "moduleEnabled": true,
+            "enabledPlatforms": [
+                "Android",
+                "iOS",
+                "LinuxStandalone64",
+                "PS4",
+                "PS5",
+                "Switch",
+                "WebGL",
+                "WindowsStandalone64",
+                "XboxOne"
+            ]
+        },
+        {
+            "moduleName": "StateMachinesModule",
+            "moduleEnabled": true,
+            "enabledPlatforms": [
+                "Android",
+                "iOS",
+                "LinuxStandalone64",
+                "PS4",
+                "PS5",
+                "Switch",
+                "WebGL",
+                "WindowsStandalone64",
+                "XboxOne"
+            ]
+        },
+        {
+            "moduleName": "StaticToolsModule",
+            "moduleEnabled": true,
+            "enabledPlatforms": [
+                "Android",
+                "iOS",
+                "LinuxStandalone64",
+                "PS4",
+                "PS5",
+                "Switch",
+                "WebGL",
+                "WindowsStandalone64",
+                "XboxOne"
+            ]
+        },
+        {
+            "moduleName": "UtilPackModule",
+            "moduleEnabled": true,
+            "enabledPlatforms": [
+                "Android",
+                "iOS",
+                "LinuxStandalone64",
+                "PS4",
+                "PS5",
+                "Switch",
+                "WebGL",
+                "WindowsStandalone64",
+                "XboxOne"
+            ]
+        }
+    ]
+}

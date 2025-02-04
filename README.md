@@ -26,3 +26,20 @@ Exact supported build targets may vary by module but in general I will be target
 - WebGL
 - WindowsStandalone64
 - XboxOne
+
+# Version Goals
+
+## [0.1.0] First Publicaly Avalible Version
+- Most functionality required to make the package easily useable by people other than me is present
+
+## [0.2.0] External Dependencies Support
+- Support for modules that have dependencies outside of the other modules. For example: depends on TMPro
+  - Automatically add required external dependencies
+  
+
+## All Versions In-between
+- Working to get modules out of experimental
+
+## [1.0.0] First Major Version
+- All early modules out of experimental phase
+- Minimal chances of breaking

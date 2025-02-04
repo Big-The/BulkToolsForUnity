@@ -14,7 +14,7 @@ public class PackageBuildingTools : MonoBehaviour
             folderPath = folderPath.Remove(folderPath.LastIndexOf('/'));
         }
         string path = System.IO.Path.Combine(folderPath, "New Module Meta.asset");
-        var newModule = new BTools.Management.Editor.ModuleMetaData();
+        var newModule = new BTools.Management.EditorScripts.ModuleMetaData();
         newModule.supportedPlatforms = new List<string>
         {
             "Android",

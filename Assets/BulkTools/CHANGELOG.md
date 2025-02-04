@@ -3,16 +3,19 @@
 ## [0.0.6]
 
 ### Fixes:
-
+- Module state config is now stored in project settings allowing better support for use in remote repos
 
 ### Added:
 - Added More Attributes module
   - ReadOnly
 - Added Simple Editor Tools module
   - Children Sorting
+- Module Config is now avalible in project settings window as well
 
 ### Updated:
-
+- Changed BTools.Management.Editor namespace to BTools.Management.EditorScritps
+- Module Manager logic is now fully static, allowing it to be added to any window easily
+- Internal Assembly Definitions are now saved with readable formatting
 
 
 
@@ -46,6 +49,7 @@
 - Changed menu item "BulkTools/Management Window" to "BulkTools/Module Manager" to match the window name better
 - Singleton Tools Module now supports singletons outside of the default assembly
 - In Random Extras in the Util Pack module the RandomSequence allUnique is now optional and spelled correctly
+
 
 
 ## [0.0.3]

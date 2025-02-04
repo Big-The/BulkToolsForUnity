@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.PackageManager;
 
-namespace BTools.Management.Editor
+namespace BTools.Management.EditorScripts
 {
     public class BulkToolsManagementWindow : EditorWindow
     {
@@ -22,7 +22,7 @@ namespace BTools.Management.Editor
         private static List<bool> moduleEnabled = new List<bool>();
         private static List<bool> platformsShown = new List<bool>();
         private static List<List<bool>> enabledPlatforms = new List<List<bool>>();
-        private Vector2 scrollPos = Vector2.zero;
+        private static Vector2 scrollPos = Vector2.zero;
 
 
         [MenuItem("BulkTools/Module Manager", priority = 0)]
@@ -33,6 +33,11 @@ namespace BTools.Management.Editor
         }
 
         public void OnGUI()
+        {
+            DrawGUI();
+        }
+
+        public static void DrawGUI()
         {
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
             //Window description
@@ -63,7 +68,7 @@ namespace BTools.Management.Editor
         /// <summary>
         /// Draws the apply and revert/refresh buttons in a horizontal group.
         /// </summary>
-        private void ApplyRevertButtons() 
+        private static void ApplyRevertButtons() 
         {
             EditorGUILayout.Space(5);
             GUILayout.BeginHorizontal();
@@ -85,7 +90,7 @@ namespace BTools.Management.Editor
         /// <summary>
         /// Draws a 1 unit seprator line
         /// </summary>
-        private void DrawLine(bool horizontal = true) 
+        private static void DrawLine(bool horizontal = true) 
         {
             if(horizontal) 
             {
@@ -97,7 +102,7 @@ namespace BTools.Management.Editor
             }
         }
 
-        private void DrawModuleGUI(int moduleIndex) 
+        private static void DrawModuleGUI(int moduleIndex) 
         {
             var module = modules[moduleIndex];
 
@@ -182,7 +187,7 @@ namespace BTools.Management.Editor
         /// <param name="moduleIndex"></param>
         /// <param name="platformsRequired"></param>
         /// <returns></returns>
-        private bool CheckDependedOn(int moduleIndex, out List<string> platformsRequired) 
+        private static bool CheckDependedOn(int moduleIndex, out List<string> platformsRequired) 
         {
             bool dependedOn = false;
             platformsRequired = new List<string>();
@@ -210,7 +215,7 @@ namespace BTools.Management.Editor
         /// Updates the states of all dependencies recursively.
         /// </summary>
         /// <param name="moduleIndex"></param>
-        private void UpdateDependencies(int moduleIndex) 
+        private static void UpdateDependencies(int moduleIndex) 
         {
             if (!moduleEnabled[moduleIndex]) { return; } //If this module isn't enabled then it's dependencies don't matter exit early
             foreach (var dependency in modules[moduleIndex].dependencies) //Loop through the dependency names
@@ -240,7 +245,7 @@ namespace BTools.Management.Editor
         /// <summary>
         /// Reverts current settings to what is currently configured in the assemdefs by reinitializing the cache
         /// </summary>
-        private void RevertRefresh() 
+        private static void RevertRefresh() 
         {
             ready = false;
             EditorApplication.delayCall += UpdatePackageMode;
@@ -279,7 +284,7 @@ namespace BTools.Management.Editor
         {
             LoadAllPossibleAssemblyTargets();
             GetEnabledStates();
-
+            CompareToProjectSettings();
             ready = true;
         }
 
@@ -355,6 +360,50 @@ namespace BTools.Management.Editor
                 enabledPlatforms.Add(supportedPlatformsEnabledStates);
                 moduleEnabled.Add(enabledInEditor);
             }
+        }
+
+        private static void CompareToProjectSettings() 
+        {
+            var settings = BulkToolsConfig.LoadSettings();
+            foreach(var moduleConfig in settings) 
+            {
+                for (int moduleIndex = 0; moduleIndex < modules.Count; moduleIndex++) 
+                {
+                    if (modules[moduleIndex].name == moduleConfig.moduleName) 
+                    {
+                        moduleEnabled[moduleIndex] = moduleConfig.moduleEnabled;
+                        for(int platformIndex = 0; platformIndex < modules[moduleIndex].supportedPlatforms.Count; platformIndex++) 
+                        {
+                            enabledPlatforms[moduleIndex][platformIndex] = moduleConfig.enabledPlatforms.Contains(modules[moduleIndex].supportedPlatforms[platformIndex]);
+                        }
+                    }
+                }
+            }
+            ApplyEnabledStates();
+        }
+
+        private static void ApplyToProjectSettings() 
+        {
+            var settings = new List<ModuleConfig>();
+
+            for (int moduleIndex = 0; moduleIndex < modules.Count; moduleIndex++)
+            {
+                ModuleConfig moduleConfig = new ModuleConfig() 
+                {
+                    moduleName = modules[moduleIndex].name,
+                    moduleEnabled = moduleEnabled[moduleIndex],
+                    enabledPlatforms = new List<string>()
+                };
+                for (int platformIndex = 0; platformIndex < modules[moduleIndex].supportedPlatforms.Count; platformIndex++)
+                {
+                    if (enabledPlatforms[moduleIndex][platformIndex]) 
+                    {
+                        moduleConfig.enabledPlatforms.Add(modules[moduleIndex].supportedPlatforms[platformIndex]); 
+                    }
+                }
+                settings.Add(moduleConfig);
+            }
+            BulkToolsConfig.SaveSettings(settings);
         }
 
         /// <summary>
@@ -445,6 +494,8 @@ namespace BTools.Management.Editor
                     }
                 }
             }
+            ApplyToProjectSettings();
+            AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
     }

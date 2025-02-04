@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-namespace BTools.Management.Editor
+namespace BTools.Management.EditorScripts
 {
     [System.Serializable]
     public class AssemblyDef
@@ -74,7 +74,7 @@ namespace BTools.Management.Editor
 
         public static string GetAsJSONString(AssemblyDef assemblyDef) 
         {
-            return assemblyDef.GetAsJSONString();
+            return assemblyDef.GetAsJSONString(readable: true);
         }
 
         public void Write(string path) 

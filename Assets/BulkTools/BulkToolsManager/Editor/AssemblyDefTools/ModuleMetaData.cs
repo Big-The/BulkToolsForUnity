@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace BTools.Management.Editor
+namespace BTools.Management.EditorScripts
 {
     public class ModuleMetaData : ScriptableObject
     {
