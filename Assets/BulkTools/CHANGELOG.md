@@ -1,11 +1,16 @@
 # Changes:
 
-## [0.0.5]
+## [0.0.6]
 
 ### Fixes:
 ### Added:
 ### Updated:
-- Updated README to be usefull
+
+
+## [0.0.5]
+
+### Updated:
+- Updated README to be useful
 - Limited platform options to only platforms I plan on actually supporting. Supported platforms are the following
   - Android
   - iOS
@@ -16,6 +21,7 @@
   - WebGL
   - WindowsStandalone64
   - XboxOne
+
 
 
 ## [0.0.4]

@@ -18,23 +18,12 @@ public class PackageBuildingTools : MonoBehaviour
         newModule.supportedPlatforms = new List<string>
         {
             "Android",
-            "EmbeddedLinux",
-            "GameCoreScarlett",
-            "GameCoreXboxOne",
             "iOS",
             "LinuxStandalone64",
-            "CloudRendering",
-            "macOSStandalone",
             "PS4",
             "PS5",
-            "QNX",
-            "Stadia",
             "Switch",
-            "tvOS",
-            "WSA",
-            "VisionOS",
             "WebGL",
-            "WindowsStandalone32",
             "WindowsStandalone64",
             "XboxOne"
         };
