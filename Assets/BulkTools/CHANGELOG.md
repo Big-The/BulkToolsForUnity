@@ -1,5 +1,21 @@
 # Changes:
 
+## [0.0.5]
+
+### Fixes:
+### Added:
+### Updated:
+- Updated README to be usefull
+- Limited platform options to only platforms I plan on actually supporting. Supported platforms are the following
+  - Android
+  - iOS
+  - LinuxStandalone64
+  - PS4
+  - PS5
+  - Switch
+  - WebGL
+  - WindowsStandalone64
+  - XboxOne
 
 
 ## [0.0.4]
