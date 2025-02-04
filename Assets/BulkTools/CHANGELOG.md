@@ -2,6 +2,21 @@
 
 
 
+## [0.0.4]
+
+### Fixes:
+- Swapped remaining RTags naming scheme to new BTags in the Better Tags module
+
+### Added:
+- Added inline documentation where it was missing
+- Added a second set of apply and revert/refresh buttons to the module manager window
+
+### Updated:
+- Changed menu item "BulkTools/Management Window" to "BulkTools/Module Manager" to match the window name better
+- Singleton Tools Module now supports singletons outside of the default assembly
+- In Random Extras in the Util Pack module the RandomSequence allUnique is now optional and spelled correctly
+
+
 ## [0.0.3]
 
 ### Added:

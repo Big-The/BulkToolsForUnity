@@ -7,7 +7,10 @@ namespace BTools.StateMachines
 {
     public class SimpleStateMachine
     {
-        public Dictionary<string, StateAction> states = new Dictionary<string, StateAction>();
+        /// <summary>
+        /// Stores all states with their ids
+        /// </summary>
+        private Dictionary<string, StateAction> states = new Dictionary<string, StateAction>();
         private Dictionary<string, bool> boolValues = new Dictionary<string, bool>();
         private Dictionary<string, int> intValues = new Dictionary<string, int>();
         private Dictionary<string, float> floatValues = new Dictionary<string, float>();
@@ -18,6 +21,10 @@ namespace BTools.StateMachines
         private StateAction _currentAction;
         private bool running = false;
 
+        /// <summary>
+        /// A method that performs the action of the current state. Called durring every Run call where it is the active state.
+        /// </summary>
+        /// <param name="stateMachine"></param>
         public delegate void StateAction(SimpleStateMachine stateMachine);
 
         public SimpleStateMachine(string defaultStateName, StateAction stateAction)
@@ -27,6 +34,13 @@ namespace BTools.StateMachines
             AddState(defaultStateName, stateAction);
         }
 
+        /// <summary>
+        /// Add a state to the state machine.
+        /// </summary>
+        /// <param name="stateName">A unique state name</param>
+        /// <param name="stateAction">Action to perform durring run when the state is active</param>
+        /// <exception cref="InvalidStateException"></exception>
+        /// <exception cref="StateAlreadyExistsException"></exception>
         public void AddState(string stateName, StateAction stateAction)
         {
             if (stateAction == null) { throw new InvalidStateException(); }
@@ -38,6 +52,11 @@ namespace BTools.StateMachines
             throw new StateAlreadyExistsException();
         }
 
+        /// <summary>
+        /// Force the state machine to switch to the specified state.
+        /// </summary>
+        /// <param name="stateName">The name of the state to switch to. Must be a name that exists.</param>
+        /// <exception cref="StateDoesNotExistException"></exception>
         public void SetCurrentState(string stateName)
         {
             if (states.TryGetValue(stateName, out StateAction stateAction))
@@ -51,13 +70,23 @@ namespace BTools.StateMachines
             }
         }
 
-        public void AddTransition(Transition transition)
+        /// <summary>
+        /// Add a transition to the state machine.
+        /// </summary>
+        /// <param name="transition">The transition to add</param>
+        /// <exception cref="InvalidStateException"></exception>
+        public void AddTransition(Transition transition) 
         {
             if (transition == null || transition.transitionTest == null) { throw new InvalidStateException(); };
             if (!states.ContainsKey(transition.fromState) && !states.ContainsKey(transition.toState)) { throw new InvalidStateException(); }
             transitions[transition.fromState].Add(transition);
         }
 
+        /// <summary>
+        /// Call this to run the current state once. After the state completes transition conditions are checked.
+        /// (Recomended to call in an Update)
+        /// </summary>
+        /// <exception cref="AlreadyRunningException"></exception>
         public void Run()
         {
             if (running)
@@ -86,6 +115,11 @@ namespace BTools.StateMachines
         }
 
         #region Values
+        /// <summary>
+        /// Set a bool value on the state machine.
+        /// </summary>
+        /// <param name="boolName"></param>
+        /// <param name="value"></param>
         public void SetBool(string boolName, bool value)
         {
             if (boolValues.ContainsKey(boolName))
@@ -98,6 +132,11 @@ namespace BTools.StateMachines
             }
         }
 
+        /// <summary>
+        /// Get a bool value from the state machine.
+        /// </summary>
+        /// <param name="boolName"></param>
+        /// <returns></returns>
         public bool GetBool(string boolName)
         {
             if (boolValues.TryGetValue(boolName, out bool value))
@@ -107,6 +146,11 @@ namespace BTools.StateMachines
             return false;
         }
 
+        /// <summary>
+        /// Set an int value on the state machine.
+        /// </summary>
+        /// <param name="intName"></param>
+        /// <param name="value"></param>
         public void SetInt(string intName, int value)
         {
             if (intValues.ContainsKey(intName))
@@ -119,6 +163,11 @@ namespace BTools.StateMachines
             }
         }
 
+        /// <summary>
+        /// Get an int value from the state machine.
+        /// </summary>
+        /// <param name="intName"></param>
+        /// <returns></returns>
         public int GetInt(string intName)
         {
             if (intValues.TryGetValue(intName, out int value))
@@ -128,6 +177,11 @@ namespace BTools.StateMachines
             return 0;
         }
 
+        /// <summary>
+        /// Set a float value on the state machine
+        /// </summary>
+        /// <param name="floatName"></param>
+        /// <param name="value"></param>
         public void SetFloat(string floatName, float value)
         {
             if (floatValues.ContainsKey(floatName))
@@ -140,6 +194,11 @@ namespace BTools.StateMachines
             }
         }
 
+        /// <summary>
+        /// Get a float value from the state machine.
+        /// </summary>
+        /// <param name="floatName"></param>
+        /// <returns></returns>
         public float GetFloat(string floatName)
         {
             if (floatValues.TryGetValue(floatName, out float value))
@@ -150,6 +209,9 @@ namespace BTools.StateMachines
         }
         #endregion
 
+        /// <summary>
+        /// Defines the condition under which the state machine will switch between the specified states.
+        /// </summary>
         public class Transition
         {
             public string fromState;

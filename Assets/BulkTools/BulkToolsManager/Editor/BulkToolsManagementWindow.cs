@@ -16,19 +16,18 @@ namespace BTools.Management.Editor
         public static bool InPackageMode { get; private set; }
         private static bool ready = false;
 
+        //Cached module and window state data
         private static List<ModuleMetaData> modules = new List<ModuleMetaData>();
-
         private static List<bool> modulesShown = new List<bool>();
         private static List<bool> moduleEnabled = new List<bool>();
         private static List<bool> platformsShown = new List<bool>();
         private static List<List<bool>> enabledPlatforms = new List<List<bool>>();
-
         private Vector2 scrollPos = Vector2.zero;
 
-        [MenuItem("BulkTools/Management Window", priority = 0)]
+
+        [MenuItem("BulkTools/Module Manager", priority = 0)]
         public static void OpenManagementWindow()
         {
-            Debug.Log("Opening Management Window");
             BulkToolsManagementWindow window = (BulkToolsManagementWindow)GetWindow(typeof(BulkToolsManagementWindow));
             window.titleContent = new GUIContent("Bulk Tools Module Manager");
         }
@@ -36,10 +35,39 @@ namespace BTools.Management.Editor
         public void OnGUI()
         {
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+            //Window description
             EditorGUILayout.LabelField("This is the module manager. Use this window to pick what modules you want enabled and on what platform.", EditorStyles.wordWrappedLabel);
+
+            ApplyRevertButtons();
+
+            if (!ready)
+            {
+                DrawLine(horizontal: true);
+                GUILayout.Label("Loading");
+                DrawLine(horizontal: true);
+            }
+            else
+            {
+                DrawLine(horizontal: true);
+                for (int i = 0; i < modules.Count; i++)
+                {
+                    DrawModuleGUI(i);
+                    DrawLine(horizontal: true);
+                }
+            }
+
+            ApplyRevertButtons();
+            EditorGUILayout.EndScrollView();
+        }
+
+        /// <summary>
+        /// Draws the apply and revert/refresh buttons in a horizontal group.
+        /// </summary>
+        private void ApplyRevertButtons() 
+        {
             EditorGUILayout.Space(5);
             GUILayout.BeginHorizontal();
-            EditorGUI.BeginDisabledGroup(!ready);
+            EditorGUI.BeginDisabledGroup(!ready);//Disable the buttons if not ready
             if (GUILayout.Button("Apply", EditorStyles.miniButtonLeft, GUILayout.Width(100)))
             {
                 ApplyEnabledStates();
@@ -52,34 +80,28 @@ namespace BTools.Management.Editor
             EditorGUI.EndDisabledGroup();
             GUILayout.EndHorizontal();
             EditorGUILayout.Space(5);
-
-            if (!ready)
-            {
-                DrawLine();
-                GUILayout.Label("Loading");
-                DrawLine();
-                EditorGUILayout.EndScrollView();
-                return;
-            }
-
-            DrawLine();
-            for (int i = 0; i < modules.Count; i++)
-            {
-                DrawModuleGUI(i);
-                DrawLine();
-            }
-            EditorGUILayout.EndScrollView();
         }
 
-        private void DrawLine() 
+        /// <summary>
+        /// Draws a 1 unit seprator line
+        /// </summary>
+        private void DrawLine(bool horizontal = true) 
         {
-            EditorGUI.DrawRect(EditorGUILayout.GetControlRect(GUILayout.Height(1)), Color.grey);
+            if(horizontal) 
+            {
+                EditorGUI.DrawRect(EditorGUILayout.GetControlRect(GUILayout.Height(1)), Color.grey);
+            }
+            else 
+            {
+                EditorGUI.DrawRect(EditorGUILayout.GetControlRect(GUILayout.Width(1)), Color.grey);
+            }
         }
 
         private void DrawModuleGUI(int moduleIndex) 
         {
             var module = modules[moduleIndex];
 
+            //Create title GUIContent. Adds experimental tag, and disclaimer in tool tip.
             GUIContent titleContent = null;
             if (module.experimental)
             {
@@ -90,6 +112,7 @@ namespace BTools.Management.Editor
                 titleContent = new GUIContent(module.moduleName, module.description);
             }
 
+            //Module Title foldout. Exit early if foldout closed
             modulesShown[moduleIndex] = EditorGUILayout.Foldout(modulesShown[moduleIndex], titleContent);
             EditorGUI.indentLevel++;
             if (!modulesShown[moduleIndex]) 
@@ -98,23 +121,28 @@ namespace BTools.Management.Editor
                 return;
             }
 
+            //Module description
             EditorGUILayout.LabelField(module.description, EditorStyles.wordWrappedLabel);
 
             bool dependedOn = CheckDependedOn(moduleIndex, out List<string> platformsDependedOn);
 
             EditorGUI.BeginChangeCheck();
-            EditorGUI.BeginDisabledGroup(dependedOn);
+
+            //Module enabled in project state:
+            EditorGUI.BeginDisabledGroup(dependedOn);//If this module is depended on it can't be disabled
             moduleEnabled[moduleIndex] = EditorGUILayout.Toggle("Enabled in Project", moduleEnabled[moduleIndex]);
             EditorGUI.EndDisabledGroup();
+
+            //Platform specific enabled states:
             platformsShown[moduleIndex] = EditorGUILayout.Foldout(platformsShown[moduleIndex], new GUIContent("Include on Platforms:", "Platforms that this module should be included on."));
-            EditorGUI.BeginDisabledGroup(!moduleEnabled[moduleIndex]);
+            EditorGUI.BeginDisabledGroup(!moduleEnabled[moduleIndex]);//If the whole module is disabled it's platforms can't be modified
             if (platformsShown[moduleIndex]) 
             {
                 EditorGUI.indentLevel++;
            
                 for(int i = 0; i < enabledPlatforms[moduleIndex].Count; i++) 
                 {
-                    EditorGUI.BeginDisabledGroup(platformsDependedOn.Contains(module.supportedPlatforms[i]));
+                    EditorGUI.BeginDisabledGroup(platformsDependedOn.Contains(module.supportedPlatforms[i]));//If this module is depended on on this platform it can't be changed here.
                     enabledPlatforms[moduleIndex][i] = EditorGUILayout.Toggle(new GUIContent(module.supportedPlatforms[i], " " + module.supportedPlatforms[i] + " "), enabledPlatforms[moduleIndex][i]);
                     EditorGUI.EndDisabledGroup();
                 }
@@ -122,11 +150,13 @@ namespace BTools.Management.Editor
             }
             EditorGUI.EndDisabledGroup();
 
+            //Update dependencies if this module has been updated
             if (EditorGUI.EndChangeCheck() && moduleEnabled[moduleIndex]) 
             {
                 UpdateDependencies(moduleIndex);
             }
-
+            
+            //Show this module's dependencies if there are any
             if(module.dependencies.Count > 0) 
             {
                 EditorGUILayout.LabelField("Module Dependencies");
@@ -139,24 +169,29 @@ namespace BTools.Management.Editor
             EditorGUI.indentLevel--;
         }
 
+        /// <summary>
+        /// Get depended on requirements. (If this module is depended on at all and what platforms it's required on)
+        /// </summary>
+        /// <param name="moduleIndex"></param>
+        /// <param name="platformsRequired"></param>
+        /// <returns></returns>
         private bool CheckDependedOn(int moduleIndex, out List<string> platformsRequired) 
         {
             bool dependedOn = false;
             platformsRequired = new List<string>();
             string moduleName = modules[moduleIndex].name;
-            for(int i = 0; i < modules.Count; i++) 
+            for(int otherModuleIndex = 0; otherModuleIndex < modules.Count; otherModuleIndex++) //Loop through the other modules
             {
-                if (moduleEnabled[i]) 
+                //If the other module is enabled and has the current module as a dependency
+                if (moduleEnabled[otherModuleIndex] && modules[otherModuleIndex].dependencies.Contains(moduleName)) 
                 {
-                    if (modules[i].dependencies.Contains(moduleName)) 
+                    dependedOn = true;
+                    for (int platformIndex = 0; platformIndex < modules[otherModuleIndex].supportedPlatforms.Count; platformIndex++)//Loop through the other module's platform states
                     {
-                        dependedOn = true;
-                        for (int platformIndex = 0; platformIndex < modules[i].supportedPlatforms.Count; platformIndex++)
+                        //If the other module has a platform required that isn't already tracked by platformsRequired
+                        if (enabledPlatforms[otherModuleIndex][platformIndex] && !platformsRequired.Contains(modules[otherModuleIndex].supportedPlatforms[platformIndex]))
                         {
-                            if (enabledPlatforms[i][platformIndex] && !platformsRequired.Contains(modules[i].supportedPlatforms[platformIndex]))
-                            {
-                                platformsRequired.Add(modules[i].supportedPlatforms[platformIndex]);
-                            }
+                            platformsRequired.Add(modules[otherModuleIndex].supportedPlatforms[platformIndex]);//Add the platform to the platformsRequired list
                         }
                     }
                 }
@@ -164,35 +199,49 @@ namespace BTools.Management.Editor
             return dependedOn;
         }
 
+        /// <summary>
+        /// Updates the states of all dependencies recursively.
+        /// </summary>
+        /// <param name="moduleIndex"></param>
         private void UpdateDependencies(int moduleIndex) 
         {
-            if (!moduleEnabled[moduleIndex]) { return; }
-            foreach (var dependency in modules[moduleIndex].dependencies) 
+            if (!moduleEnabled[moduleIndex]) { return; } //If this module isn't enabled then it's dependencies don't matter exit early
+            foreach (var dependency in modules[moduleIndex].dependencies) //Loop through the dependency names
             {
-                for(int dependencyIndex = 0; dependencyIndex < modules.Count; dependencyIndex++) 
+                for(int dependencyIndex = 0; dependencyIndex < modules.Count; dependencyIndex++) //Loop through all modules
                 {
-                    if (modules[dependencyIndex].name == dependency) 
+                    if (modules[dependencyIndex].name == dependency) //If the names match this module is a dependency
                     {
-                        moduleEnabled[dependencyIndex] = true;
-                        for(int platformIndex = 0; platformIndex < modules[moduleIndex].supportedPlatforms.Count; platformIndex++) 
+                        moduleEnabled[dependencyIndex] = true;//Force this module enabled
+
+                        //loop over platforms and force any required platforms to enabled
+                        for (int platformIndex = 0; platformIndex < modules[moduleIndex].supportedPlatforms.Count; platformIndex++) 
                         {
                             if (enabledPlatforms[moduleIndex][platformIndex]) 
                             {
                                 enabledPlatforms[dependencyIndex][modules[dependencyIndex].supportedPlatforms.IndexOf(modules[moduleIndex].supportedPlatforms[platformIndex])] = true;
                             }
                         }
+
+                        //Call this recursively until there are no more dependencies.
                         UpdateDependencies(dependencyIndex);
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Reverts current settings to what is currently configured in the assemdefs by reinitializing the cache
+        /// </summary>
         private void RevertRefresh() 
         {
             ready = false;
             EditorApplication.delayCall += UpdatePackageMode;
         }
 
+        /// <summary>
+        /// Updates InPackageMode based on if the package is loaded as a package or asset (In Packages or Assets folder)
+        /// </summary>
         [UnityEditor.Callbacks.DidReloadScripts]
         private static void UpdatePackageMode() 
         {
@@ -216,6 +265,9 @@ namespace BTools.Management.Editor
             PostCompileReload();
         }
 
+        /// <summary>
+        /// Initializes module meta and module assemdef settings caches
+        /// </summary>
         private static void PostCompileReload() 
         {
             LoadAllPossibleAssemblyTargets();
@@ -224,6 +276,9 @@ namespace BTools.Management.Editor
             ready = true;
         }
 
+        /// <summary>
+        /// Loads all module metas and their structure into the cache
+        /// </summary>
         private static void LoadAllPossibleAssemblyTargets()
         {
             modules = new List<ModuleMetaData>();
@@ -250,11 +305,14 @@ namespace BTools.Management.Editor
             modulesShown = new List<bool>(modules.Count);
             for(int i = 0; i < modules.Count; i++) 
             {
-                modulesShown.Add(true);
+                modulesShown.Add(false);
                 platformsShown.Add(false);
             }
         }
 
+        /// <summary>
+        /// Coppies the current assemdef configurations to the settings cache
+        /// </summary>
         private static void GetEnabledStates()
         {
             moduleEnabled = new List<bool>(modules.Count);
@@ -292,6 +350,9 @@ namespace BTools.Management.Editor
             }
         }
 
+        /// <summary>
+        /// Applys current settings to the assembly definitions
+        /// </summary>
         private static void ApplyEnabledStates()
         {
             for (int i = 0; i < modules.Count; i++) 

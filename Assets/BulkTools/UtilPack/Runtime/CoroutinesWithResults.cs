@@ -7,6 +7,13 @@ namespace BTools.UtilPack
 {
     public static class CoroutinesWithResults
     {
+        /// <summary>
+        /// Starts a coroutine that can return results via the object returned here.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="owner"></param>
+        /// <param name="routine"></param>
+        /// <returns></returns>
         public static CoroutineWithResults<T> StartCoroutineWithResults<T>(this MonoBehaviour owner, IEnumerator<T> routine)
         {
             return new CoroutineWithResults<T>(owner, routine);
@@ -22,6 +29,11 @@ namespace BTools.UtilPack
         private IEnumerator<T> routine;
         private MonoBehaviour owner;
 
+        /// <summary>
+        /// Starts a coroutine that can return results via this object.
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <param name="routine"></param>
         public CoroutineWithResults(MonoBehaviour owner, IEnumerator<T> routine)
         {
             this.owner = owner;
@@ -29,6 +41,10 @@ namespace BTools.UtilPack
             this.MyCoroutine = owner.StartCoroutine(Run());
         }
 
+        /// <summary>
+        /// A standard unity coroutine that manages the custom coroutine logic
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator Run()
         {
             while (routine.MoveNext())
@@ -41,9 +57,11 @@ namespace BTools.UtilPack
             }
             IsDone = true;
             onDone.Invoke(Current);
-            Debug.Log("Run Fin");
         }
 
+        /// <summary>
+        /// Stops the coroutine
+        /// </summary>
         public void StopCoroutine()
         {
             if (MyCoroutine == null) { return; }

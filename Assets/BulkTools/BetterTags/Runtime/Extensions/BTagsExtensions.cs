@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BTools.BTags
 {
-    public static class RTagsExtensions
+    public static class BTagsExtensions
     {
         /// <summary>
         /// Is the GameObject tagged with the specified tag

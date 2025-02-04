@@ -6,14 +6,22 @@ namespace BTools.UtilPack
 {
     public static class RandomExtras
     {
-        public static int[] RandomSequence(int min, int max, int size, bool allUniqe)
+        /// <summary>
+        /// Creates a random sequence of integers
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <param name="size"></param>
+        /// <param name="allUnique">If every item in the resulting sequence should be unique</param>
+        /// <returns></returns>
+        public static int[] RandomSequence(int min, int max, int size, bool allUnique = false)
         {
             if (min > max)
             {
                 Debug.LogError("Max can not be smaller then min.");
                 return new int[size];
             }
-            if (allUniqe && max - min < size)
+            if (allUnique && max - min < size)
             {
                 Debug.LogError("Range is not big enough.");
                 return new int[size];
@@ -35,10 +43,11 @@ namespace BTools.UtilPack
                         results.Add(temp);
                         break;
                     }
-                } while (allUniqe);
+                } while (allUnique);
             }
             return results.ToArray();
         }
+
         private static int[] RandomSequencePicker(int min, int max, int size)
         {
             List<int> ints = new List<int>();
@@ -56,6 +65,11 @@ namespace BTools.UtilPack
             return ints.ToArray();
         }
 
+        /// <summary>
+        /// Picks a random index based on the weight values passed in.
+        /// </summary>
+        /// <param name="weights"></param>
+        /// <returns></returns>
         public static int WeightedRandom(IEnumerable<float> weights)
         {
             float total = 0;
