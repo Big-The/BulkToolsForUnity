@@ -16,6 +16,7 @@
 - Changed BTools.Management.Editor namespace to BTools.Management.EditorScritps
 - Module Manager logic is now fully static, allowing it to be added to any window easily
 - Internal Assembly Definitions are now saved with readable formatting
+- Modules are no longer required to have assemblies assigned.
 
 
 
