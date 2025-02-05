@@ -31,4 +31,10 @@ public class PackageBuildingTools : MonoBehaviour
         
         Debug.Log("Created new module meta at:" + path);
     }
+
+    [MenuItem("Package Building Tools/Trigger Recompile")]
+    public static void TriggerRecompile() 
+    {
+        UnityEditor.Compilation.CompilationPipeline.RequestScriptCompilation();
+    }
 }

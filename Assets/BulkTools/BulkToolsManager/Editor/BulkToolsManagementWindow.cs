@@ -40,11 +40,12 @@ namespace BTools.Management.EditorScripts
         public static void DrawGUI()
         {
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+            EditorGUILayout.Space();
             //Window description
             EditorGUILayout.LabelField("This is the module manager. Use this window to pick what modules you want enabled and on what platform.", EditorStyles.wordWrappedLabel);
 
+            EditorGUILayout.LabelField("Enabled Modules", EditorStyles.boldLabel);
             ApplyRevertButtons();
-
             if (!ready)
             {
                 DrawLine(horizontal: true);
@@ -60,7 +61,6 @@ namespace BTools.Management.EditorScripts
                     DrawLine(horizontal: true);
                 }
             }
-
             ApplyRevertButtons();
             EditorGUILayout.EndScrollView();
         }
@@ -118,7 +118,7 @@ namespace BTools.Management.EditorScripts
             }
 
             //Module Title foldout. Exit early if foldout closed
-            modulesShown[moduleIndex] = EditorGUILayout.Foldout(modulesShown[moduleIndex], titleContent);
+            modulesShown[moduleIndex] = EditorGUILayout.Foldout(modulesShown[moduleIndex], titleContent, true);
             EditorGUI.indentLevel++;
             if (!modulesShown[moduleIndex]) 
             {
@@ -134,9 +134,20 @@ namespace BTools.Management.EditorScripts
             EditorGUI.BeginChangeCheck();
 
             //Module enabled in project state:
-            EditorGUI.BeginDisabledGroup(dependedOn);//If this module is depended on it can't be disabled
-            moduleEnabled[moduleIndex] = EditorGUILayout.Toggle("Enabled in Project", moduleEnabled[moduleIndex]);
-            EditorGUI.EndDisabledGroup();
+            if (module.normalAssembly.Length > 0 || module.editorAssembly.Length > 0)//If the module has any assembly attactched
+            {
+                EditorGUI.BeginDisabledGroup(dependedOn);//If this module is depended on it can't be disabled
+                var content = new GUIContent("Enabled in Project", dependedOn ? "Module is depended on, and can't be disabled." : "");
+                moduleEnabled[moduleIndex] = EditorGUILayout.Toggle(content, moduleEnabled[moduleIndex]);
+                EditorGUI.EndDisabledGroup();
+            }
+            else //The module has no assembly attached and can't be disabled because of it
+            {
+                EditorGUI.BeginDisabledGroup(true);
+                var content = new GUIContent("Enabled in Project", "Module has no assembly defined, and can't be disabled.");
+                EditorGUILayout.Toggle(content, true);
+                EditorGUI.EndDisabledGroup();
+            }
 
             //Platform specific enabled states:
             if (module.normalAssembly.Length > 0)
