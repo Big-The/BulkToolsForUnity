@@ -11,6 +11,8 @@
 - Added Simple Editor Tools module
   - Children Sorting
 - Module Config is now avalible in project settings window as well
+- Added Asset Replacement Module
+  - Used to easily replace asset files without breaking refereneces
 
 ### Updated:
 - Changed BTools.Management.Editor namespace to BTools.Management.EditorScritps

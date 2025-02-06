@@ -1,6 +1,11 @@
 {
     "modules": [
         {
+            "moduleName": "AssetReplacementModule",
+            "moduleEnabled": true,
+            "enabledPlatforms": []
+        },
+        {
             "moduleName": "BetterTagsModule",
             "moduleEnabled": true,
             "enabledPlatforms": [
