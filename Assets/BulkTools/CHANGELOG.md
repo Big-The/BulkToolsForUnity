@@ -1,11 +1,33 @@
 # Changes:
 
-## [0.0.5]
+## [0.0.6]
 
 ### Fixes:
+- Module state config is now stored in project settings allowing better support for use in remote repos
+
 ### Added:
+- Added More Attributes module
+  - ReadOnly
+- Added Simple Editor Tools module
+  - Children Sorting
+- Module Config is now avalible in project settings window as well
+- Added Asset Replacement Module
+  - Used to easily replace asset files without breaking refereneces
+- Added Magic Events module
+  - Used to connect multiple bits of logic together indirectly
+
 ### Updated:
-- Updated README to be usefull
+- Changed BTools.Management.Editor namespace to BTools.Management.EditorScritps
+- Module Manager logic is now fully static, allowing it to be added to any window easily
+- Internal Assembly Definitions are now saved with readable formatting
+- Modules are no longer required to have assemblies assigned.
+
+
+
+## [0.0.5]
+
+### Updated:
+- Updated README to be useful
 - Limited platform options to only platforms I plan on actually supporting. Supported platforms are the following
   - Android
   - iOS
@@ -16,6 +38,7 @@
   - WebGL
   - WindowsStandalone64
   - XboxOne
+
 
 
 ## [0.0.4]
@@ -31,6 +54,7 @@
 - Changed menu item "BulkTools/Management Window" to "BulkTools/Module Manager" to match the window name better
 - Singleton Tools Module now supports singletons outside of the default assembly
 - In Random Extras in the Util Pack module the RandomSequence allUnique is now optional and spelled correctly
+
 
 
 ## [0.0.3]

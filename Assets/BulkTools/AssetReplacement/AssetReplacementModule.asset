@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 11500000, guid: 8ab3f9640c22f534bb6f7cf289be858a, type: 3}
+  m_Name: AssetReplacementModule
+  m_EditorClassIdentifier: 
+  moduleName: Asset Replacement
+  description: 'Asset Replacement provides a simple way to quickly replace assets
+    without impacting references by keeping the same GUID for the new asset.
+
+    It
+    can replace assets keeping the old name or using the name of the replacement.'
+  normalAssembly: 
+  editorAssembly: Editor/AssetReplacementEditor.asmdef
+  supportedPlatforms: []
+  dependencies: []
+  experimental: 1

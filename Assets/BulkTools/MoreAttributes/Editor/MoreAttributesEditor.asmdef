@@ -1,0 +1,18 @@
+{
+    "name": "MoreAttributesEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:883b773d758e16d4d9bcecf79c757a66"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
