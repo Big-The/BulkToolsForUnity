@@ -89,7 +89,6 @@ namespace BTools.Singletons
             {
                 string assemblyName = assembly.GetName().ToString();
                 if (CheckAssemblySkipped(assemblyName)) continue;
-                Debug.Log(assemblyName);
                 foreach (var type in assembly.GetTypes())
                 {
                     if (type.BaseType == null || !typeof(MonoBehaviour).IsAssignableFrom(type)) continue;

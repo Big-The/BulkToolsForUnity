@@ -13,9 +13,13 @@ MonoBehaviour:
   m_Name: AssetReplacementModule
   m_EditorClassIdentifier: 
   moduleName: Asset Replacement
-  description: 
+  description: 'Asset Replacement provides a simple way to quickly replace assets
+    without impacting references by keeping the same GUID for the new asset.
+
+    It
+    can replace assets keeping the old name or using the name of the replacement.'
   normalAssembly: 
   editorAssembly: Editor/AssetReplacementEditor.asmdef
   supportedPlatforms: []
   dependencies: []
-  experimental: 0
+  experimental: 1

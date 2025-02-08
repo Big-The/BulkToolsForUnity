@@ -407,7 +407,7 @@ namespace BTools.Management.EditorScripts
                 };
                 for (int platformIndex = 0; platformIndex < modules[moduleIndex].supportedPlatforms.Count; platformIndex++)
                 {
-                    if (enabledPlatforms[moduleIndex][platformIndex]) 
+                    if (enabledPlatforms[moduleIndex].Count > platformIndex && enabledPlatforms[moduleIndex][platformIndex]) 
                     {
                         moduleConfig.enabledPlatforms.Add(modules[moduleIndex].supportedPlatforms[platformIndex]); 
                     }

@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 11500000, guid: 8ab3f9640c22f534bb6f7cf289be858a, type: 3}
+  m_Name: MagicEventsModule
+  m_EditorClassIdentifier: 
+  moduleName: Magic Events
+  description: Magic Events is built to provide a convenient way to connect multiple
+    bits of logic together without any direct connection or inspector configuration,
+    using a globally accesssable event system.
+  normalAssembly: Runtime/MagicEventsRuntime.asmdef
+  editorAssembly: Editor/MagicEventsEditor.asmdef
+  supportedPlatforms:
+  - Android
+  - iOS
+  - LinuxStandalone64
+  - PS4
+  - PS5
+  - Switch
+  - WebGL
+  - WindowsStandalone64
+  - XboxOne
+  dependencies: []
+  experimental: 1

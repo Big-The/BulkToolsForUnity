@@ -13,6 +13,8 @@
 - Module Config is now avalible in project settings window as well
 - Added Asset Replacement Module
   - Used to easily replace asset files without breaking refereneces
+- Added Magic Events module
+  - Used to connect multiple bits of logic together indirectly
 
 ### Updated:
 - Changed BTools.Management.Editor namespace to BTools.Management.EditorScritps
