@@ -186,7 +186,7 @@ namespace BTools.Management.EditorScripts
                     EditorGUI.indentLevel++;
                     for (int defineIndex = 0; defineIndex < module.defineSettings.Count; defineIndex++)
                     {
-                        enabledDefineSettings[moduleIndex][defineIndex] = EditorGUILayout.Toggle(new GUIContent(module.defineSettings[defineIndex], " " + module.defineSettings[defineIndex] + " "), enabledDefineSettings[moduleIndex][defineIndex]);
+                        enabledDefineSettings[moduleIndex][defineIndex] = EditorGUILayout.Toggle(new GUIContent(module.defineSettings[defineIndex].defineSymbol, module.defineSettings[defineIndex].description), enabledDefineSettings[moduleIndex][defineIndex]);
                     }
                     EditorGUI.indentLevel--;
                 }
@@ -604,7 +604,7 @@ namespace BTools.Management.EditorScripts
             {
                 for (int defineIndex = 0; defineIndex < modules[moduleIndex].defineSettings.Count; defineIndex++)
                 {
-                    enabledDefineSettings[moduleIndex][defineIndex] = defines.Contains(modules[moduleIndex].defineSettings[defineIndex]);
+                    enabledDefineSettings[moduleIndex][defineIndex] = defines.Contains(modules[moduleIndex].defineSettings[defineIndex].defineSymbol);
                 }
             }
         }
@@ -619,14 +619,14 @@ namespace BTools.Management.EditorScripts
             {
                 for (int defineIndex = 0; defineIndex < modules[moduleIndex].defineSettings.Count; defineIndex++)
                 {
-                    if (defines.Contains(modules[moduleIndex].defineSettings[defineIndex]) && !enabledDefineSettings[moduleIndex][defineIndex])
+                    if (defines.Contains(modules[moduleIndex].defineSettings[defineIndex].defineSymbol) && !enabledDefineSettings[moduleIndex][defineIndex])
                     {
-                        defines.Remove(modules[moduleIndex].defineSettings[defineIndex]);
+                        defines.Remove(modules[moduleIndex].defineSettings[defineIndex].defineSymbol);
                         modified = true;
                     }
-                    else if (!defines.Contains(modules[moduleIndex].defineSettings[defineIndex]) && enabledDefineSettings[moduleIndex][defineIndex])
+                    else if (!defines.Contains(modules[moduleIndex].defineSettings[defineIndex].defineSymbol) && enabledDefineSettings[moduleIndex][defineIndex])
                     {
-                        defines.Add(modules[moduleIndex].defineSettings[defineIndex]);
+                        defines.Add(modules[moduleIndex].defineSettings[defineIndex].defineSymbol);
                         modified = true;
                     }
                 }

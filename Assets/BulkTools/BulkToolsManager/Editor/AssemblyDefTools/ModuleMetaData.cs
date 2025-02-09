@@ -28,7 +28,16 @@ namespace BTools.Management.EditorScripts
         [Tooltip("Dependencies of other packages")]
         public List<ExternalPackage> externalDependencies = new List<ExternalPackage>();
 
-        public List<string> defineSettings = new List<string>();
+
+        [System.Serializable]
+        public struct DefineSetting 
+        {
+            public string defineSymbol;
+            [TextArea]
+            public string description;
+        }
+
+        public List<DefineSetting> defineSettings = new List<DefineSetting>();
 
         public string GetModuleRootPath() 
         {
