@@ -14,7 +14,21 @@ namespace BTools.Management.EditorScripts
         public string editorAssembly = "";
         public List<string> supportedPlatforms = new List<string>();
 
-        public List<string> dependencies = new List<string>();
+        [Tooltip("Dependencies of other modules")]
+        public List<string> internalDependencies = new List<string>();
+
+        [System.Serializable]
+        public struct ExternalPackage 
+        {
+            public string displayName;
+            public string name;
+            public string source;
+        }
+
+        [Tooltip("Dependencies of other packages")]
+        public List<ExternalPackage> externalDependencies = new List<ExternalPackage>();
+
+        public List<string> defineSettings = new List<string>();
 
         public string GetModuleRootPath() 
         {

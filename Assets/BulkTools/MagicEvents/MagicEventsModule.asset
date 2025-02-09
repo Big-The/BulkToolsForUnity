@@ -28,5 +28,8 @@ MonoBehaviour:
   - WebGL
   - WindowsStandalone64
   - XboxOne
-  dependencies: []
+  internalDependencies: []
+  externalDependencies: []
+  defineSettings:
+  - MagicEventTracking
   experimental: 1

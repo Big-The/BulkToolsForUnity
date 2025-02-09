@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEditor.PackageManager;
 
 namespace BTools.Management.EditorScripts
@@ -21,8 +22,11 @@ namespace BTools.Management.EditorScripts
         private static List<bool> modulesShown = new List<bool>();
         private static List<bool> moduleEnabled = new List<bool>();
         private static List<bool> platformsShown = new List<bool>();
+        private static List<bool> defineSettingsShown = new List<bool>();
         private static List<List<bool>> enabledPlatforms = new List<List<bool>>();
+        private static List<List<bool>> enabledDefineSettings = new List<List<bool>>();
         private static Vector2 scrollPos = Vector2.zero;
+        private static List<string> installedPackages = new List<string>();
 
 
         [MenuItem("BulkTools/Module Manager", priority = 0)]
@@ -68,7 +72,7 @@ namespace BTools.Management.EditorScripts
         /// <summary>
         /// Draws the apply and revert/refresh buttons in a horizontal group.
         /// </summary>
-        private static void ApplyRevertButtons() 
+        private static void ApplyRevertButtons()
         {
             EditorGUILayout.Space(5);
             GUILayout.BeginHorizontal();
@@ -90,19 +94,19 @@ namespace BTools.Management.EditorScripts
         /// <summary>
         /// Draws a 1 unit seprator line
         /// </summary>
-        private static void DrawLine(bool horizontal = true) 
+        private static void DrawLine(bool horizontal = true)
         {
-            if(horizontal) 
+            if (horizontal)
             {
                 EditorGUI.DrawRect(EditorGUILayout.GetControlRect(GUILayout.Height(1)), Color.grey);
             }
-            else 
+            else
             {
                 EditorGUI.DrawRect(EditorGUILayout.GetControlRect(GUILayout.Width(1)), Color.grey);
             }
         }
 
-        private static void DrawModuleGUI(int moduleIndex) 
+        private static void DrawModuleGUI(int moduleIndex)
         {
             var module = modules[moduleIndex];
 
@@ -112,7 +116,7 @@ namespace BTools.Management.EditorScripts
             {
                 titleContent = new GUIContent(module.moduleName + " (Experimental)", "Experimental modules should not be expected to always work correctly on all platforms and/or may be missing features.\n\n" + module.description);
             }
-            else 
+            else
             {
                 titleContent = new GUIContent(module.moduleName, module.description);
             }
@@ -120,7 +124,7 @@ namespace BTools.Management.EditorScripts
             //Module Title foldout. Exit early if foldout closed
             modulesShown[moduleIndex] = EditorGUILayout.Foldout(modulesShown[moduleIndex], titleContent, true);
             EditorGUI.indentLevel++;
-            if (!modulesShown[moduleIndex]) 
+            if (!modulesShown[moduleIndex])
             {
                 EditorGUI.indentLevel--;
                 return;
@@ -168,24 +172,43 @@ namespace BTools.Management.EditorScripts
                 }
                 EditorGUI.EndDisabledGroup();
             }
-            else 
+            else
             {
                 EditorGUILayout.LabelField("Module does not include a runtime assembly, target platforms are irrelevant.");
             }
 
+            //Define Settings
+            if (module.defineSettings.Count > 0 && (module.normalAssembly.Length > 0 || module.editorAssembly.Length > 0))
+            {
+                defineSettingsShown[moduleIndex] = EditorGUILayout.Foldout(defineSettingsShown[moduleIndex], new GUIContent("Global Settings:"));
+                if (defineSettingsShown[moduleIndex])
+                {
+                    EditorGUI.indentLevel++;
+                    for (int defineIndex = 0; defineIndex < module.defineSettings.Count; defineIndex++)
+                    {
+                        enabledDefineSettings[moduleIndex][defineIndex] = EditorGUILayout.Toggle(new GUIContent(module.defineSettings[defineIndex], " " + module.defineSettings[defineIndex] + " "), enabledDefineSettings[moduleIndex][defineIndex]);
+                    }
+                    EditorGUI.indentLevel--;
+                }
+            }
+
             //Update dependencies if this module has been updated
-            if (EditorGUI.EndChangeCheck() && moduleEnabled[moduleIndex]) 
+            if (EditorGUI.EndChangeCheck() && moduleEnabled[moduleIndex])
             {
                 UpdateDependencies(moduleIndex);
             }
-            
+
             //Show this module's dependencies if there are any
-            if(module.dependencies.Count > 0) 
+            if (module.internalDependencies.Count > 0 || module.externalDependencies.Count > 0)
             {
-                EditorGUILayout.LabelField("Module Dependencies");
-                foreach (var dependency in module.dependencies) 
+                EditorGUILayout.LabelField("Dependencies");
+                foreach (var dependency in module.internalDependencies)
                 {
                     EditorGUILayout.LabelField(" - " + dependency);
+                }
+                foreach (var dependency in module.externalDependencies)
+                {
+                    EditorGUILayout.LabelField(" - " + dependency.displayName + "(" + dependency.name + ")");
                 }
             }
 
@@ -198,15 +221,15 @@ namespace BTools.Management.EditorScripts
         /// <param name="moduleIndex"></param>
         /// <param name="platformsRequired"></param>
         /// <returns></returns>
-        private static bool CheckDependedOn(int moduleIndex, out List<string> platformsRequired) 
+        private static bool CheckDependedOn(int moduleIndex, out List<string> platformsRequired)
         {
             bool dependedOn = false;
             platformsRequired = new List<string>();
             string moduleName = modules[moduleIndex].name;
-            for(int otherModuleIndex = 0; otherModuleIndex < modules.Count; otherModuleIndex++) //Loop through the other modules
+            for (int otherModuleIndex = 0; otherModuleIndex < modules.Count; otherModuleIndex++) //Loop through the other modules
             {
                 //If the other module is enabled and has the current module as a dependency
-                if (moduleEnabled[otherModuleIndex] && modules[otherModuleIndex].dependencies.Contains(moduleName)) 
+                if (moduleEnabled[otherModuleIndex] && modules[otherModuleIndex].internalDependencies.Contains(moduleName))
                 {
                     dependedOn = true;
                     for (int platformIndex = 0; platformIndex < modules[otherModuleIndex].supportedPlatforms.Count; platformIndex++)//Loop through the other module's platform states
@@ -226,21 +249,21 @@ namespace BTools.Management.EditorScripts
         /// Updates the states of all dependencies recursively.
         /// </summary>
         /// <param name="moduleIndex"></param>
-        private static void UpdateDependencies(int moduleIndex) 
+        private static void UpdateDependencies(int moduleIndex)
         {
             if (!moduleEnabled[moduleIndex]) { return; } //If this module isn't enabled then it's dependencies don't matter exit early
-            foreach (var dependency in modules[moduleIndex].dependencies) //Loop through the dependency names
+            foreach (var dependency in modules[moduleIndex].internalDependencies) //Loop through the dependency names
             {
-                for(int dependencyIndex = 0; dependencyIndex < modules.Count; dependencyIndex++) //Loop through all modules
+                for (int dependencyIndex = 0; dependencyIndex < modules.Count; dependencyIndex++) //Loop through all modules
                 {
                     if (modules[dependencyIndex].name == dependency) //If the names match this module is a dependency
                     {
                         moduleEnabled[dependencyIndex] = true;//Force this module enabled
 
                         //loop over platforms and force any required platforms to enabled
-                        for (int platformIndex = 0; platformIndex < modules[moduleIndex].supportedPlatforms.Count; platformIndex++) 
+                        for (int platformIndex = 0; platformIndex < modules[moduleIndex].supportedPlatforms.Count; platformIndex++)
                         {
-                            if (enabledPlatforms[moduleIndex][platformIndex]) 
+                            if (enabledPlatforms[moduleIndex][platformIndex])
                             {
                                 enabledPlatforms[dependencyIndex][modules[dependencyIndex].supportedPlatforms.IndexOf(modules[moduleIndex].supportedPlatforms[platformIndex])] = true;
                             }
@@ -256,7 +279,7 @@ namespace BTools.Management.EditorScripts
         /// <summary>
         /// Reverts current settings to what is currently configured in the assemdefs by reinitializing the cache
         /// </summary>
-        private static void RevertRefresh() 
+        private static void RevertRefresh()
         {
             ready = false;
             EditorApplication.delayCall += UpdatePackageMode;
@@ -266,10 +289,10 @@ namespace BTools.Management.EditorScripts
         /// Updates InPackageMode based on if the package is loaded as a package or asset (In Packages or Assets folder)
         /// </summary>
         [UnityEditor.Callbacks.DidReloadScripts]
-        private static void UpdatePackageMode() 
+        private static void UpdatePackageMode()
         {
             ready = false;
-            if (EditorApplication.isCompiling || EditorApplication.isUpdating) 
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating)
             {
                 EditorApplication.delayCall += UpdatePackageMode;
                 return;
@@ -277,9 +300,9 @@ namespace BTools.Management.EditorScripts
             var packList = Client.List();
             while (!packList.IsCompleted) { }
             InPackageMode = false;
-            foreach (var pack in packList.Result) 
+            foreach (var pack in packList.Result)
             {
-                if(pack.name == packageName) 
+                if (pack.name == packageName)
                 {
                     InPackageMode = true;
                     break;
@@ -291,10 +314,11 @@ namespace BTools.Management.EditorScripts
         /// <summary>
         /// Initializes module meta and module assemdef settings caches
         /// </summary>
-        private static void PostCompileReload() 
+        private static void PostCompileReload()
         {
             LoadAllPossibleAssemblyTargets();
             GetEnabledStates();
+            LoadDefines();
             CompareToProjectSettings();
             ready = true;
         }
@@ -309,13 +333,13 @@ namespace BTools.Management.EditorScripts
             searchPath = Path.Combine(searchPath, InPackageMode ? packageRootFolder : assetsRootFolder);
             searchPath.Replace(Path.PathSeparator, '/');
             string finalSearchPath = "";
-            for (int i = 0; i < searchPath.Length; i++) 
+            for (int i = 0; i < searchPath.Length; i++)
             {
                 if (searchPath[i] == '\\')
                 {
                     finalSearchPath += '/';
                 }
-                else 
+                else
                 {
                     finalSearchPath += searchPath[i];
                 }
@@ -326,10 +350,11 @@ namespace BTools.Management.EditorScripts
                 modules.Add(AssetDatabase.LoadAssetAtPath<ModuleMetaData>(AssetDatabase.GUIDToAssetPath(moduleGUID)));
             }
             modulesShown = new List<bool>(modules.Count);
-            for(int i = 0; i < modules.Count; i++) 
+            for (int i = 0; i < modules.Count; i++)
             {
                 modulesShown.Add(false);
                 platformsShown.Add(false);
+                defineSettingsShown.Add(false);
             }
         }
 
@@ -339,6 +364,7 @@ namespace BTools.Management.EditorScripts
         private static void GetEnabledStates()
         {
             moduleEnabled = new List<bool>(modules.Count);
+            enabledDefineSettings = new List<List<bool>>(modules.Count);
             foreach (var module in modules)
             {
                 string rootPath = module.GetModuleRootPath();
@@ -370,20 +396,31 @@ namespace BTools.Management.EditorScripts
 
                 enabledPlatforms.Add(supportedPlatformsEnabledStates);
                 moduleEnabled.Add(enabledInEditor);
+
+
+                //Define Settings:
+                var moduleDefines = new List<bool>();
+
+                foreach (var defineName in module.defineSettings)
+                {
+                    moduleDefines.Add(false);
+                }
+
+                enabledDefineSettings.Add(moduleDefines);
             }
         }
 
-        private static void CompareToProjectSettings() 
+        private static void CompareToProjectSettings()
         {
             var settings = BulkToolsConfig.LoadSettings();
-            foreach(var moduleConfig in settings) 
+            foreach (var moduleConfig in settings)
             {
-                for (int moduleIndex = 0; moduleIndex < modules.Count; moduleIndex++) 
+                for (int moduleIndex = 0; moduleIndex < modules.Count; moduleIndex++)
                 {
-                    if (modules[moduleIndex].name == moduleConfig.moduleName) 
+                    if (modules[moduleIndex].name == moduleConfig.moduleName)
                     {
                         moduleEnabled[moduleIndex] = moduleConfig.moduleEnabled;
-                        for(int platformIndex = 0; platformIndex < modules[moduleIndex].supportedPlatforms.Count; platformIndex++) 
+                        for (int platformIndex = 0; platformIndex < modules[moduleIndex].supportedPlatforms.Count; platformIndex++)
                         {
                             enabledPlatforms[moduleIndex][platformIndex] = moduleConfig.enabledPlatforms.Contains(modules[moduleIndex].supportedPlatforms[platformIndex]);
                         }
@@ -393,13 +430,13 @@ namespace BTools.Management.EditorScripts
             ApplyEnabledStates();
         }
 
-        private static void ApplyToProjectSettings() 
+        private static void ApplyToProjectSettings()
         {
             var settings = new List<ModuleConfig>();
 
             for (int moduleIndex = 0; moduleIndex < modules.Count; moduleIndex++)
             {
-                ModuleConfig moduleConfig = new ModuleConfig() 
+                ModuleConfig moduleConfig = new ModuleConfig()
                 {
                     moduleName = modules[moduleIndex].name,
                     moduleEnabled = moduleEnabled[moduleIndex],
@@ -407,9 +444,9 @@ namespace BTools.Management.EditorScripts
                 };
                 for (int platformIndex = 0; platformIndex < modules[moduleIndex].supportedPlatforms.Count; platformIndex++)
                 {
-                    if (enabledPlatforms[moduleIndex].Count > platformIndex && enabledPlatforms[moduleIndex][platformIndex]) 
+                    if (enabledPlatforms[moduleIndex].Count > platformIndex && enabledPlatforms[moduleIndex][platformIndex])
                     {
-                        moduleConfig.enabledPlatforms.Add(modules[moduleIndex].supportedPlatforms[platformIndex]); 
+                        moduleConfig.enabledPlatforms.Add(modules[moduleIndex].supportedPlatforms[platformIndex]);
                     }
                 }
                 settings.Add(moduleConfig);
@@ -418,31 +455,28 @@ namespace BTools.Management.EditorScripts
         }
 
         /// <summary>
-        /// Applys current settings to the assembly definitions
+        /// Applys current settings to all the assembly definitions
         /// </summary>
         private static void ApplyEnabledStates()
         {
-            for (int i = 0; i < modules.Count; i++) 
+            ConfirmExternalDependencies();
+            for (int moduleIndex = 0; moduleIndex < modules.Count; moduleIndex++)
             {
-                var module = modules[i];
+                var module = modules[moduleIndex];
                 string rootPath = module.GetModuleRootPath();
                 if (module.editorAssembly != "")
                 {
                     string editorAssemPath = Path.Combine(rootPath, module.editorAssembly);
                     string finalEditorAssemPath = Path.Combine(Application.dataPath.Remove(Application.dataPath.LastIndexOf('/')), editorAssemPath);
                     var editorAssem = AssemblyDef.Load(finalEditorAssemPath);
-                    if (!(editorAssem.includePlatforms.Count == 1 && editorAssem.includePlatforms.Contains("Editor")) && moduleEnabled[i])
-                    {
-                        editorAssem.includePlatforms = new List<string> { "Editor" };
-                        editorAssem.excludePlatforms = new List<string>();
-                        editorAssem.Write(finalEditorAssemPath);
-                    }
-                    else if(editorAssem.includePlatforms.Count > 0 && !moduleEnabled[i])
-                    {
-                        editorAssem.includePlatforms = new List<string>();
-                        editorAssem.excludePlatforms = AssemblyDef.DisabledExcludePlatforms;
-                        editorAssem.Write(finalEditorAssemPath);
-                    }
+                    ApplyAssemblySettings(
+                        assemPath: finalEditorAssemPath,
+                        assembly: editorAssem,
+                        moduleMeta: module,
+                        isEditorOnly: true,
+                        enabled: moduleEnabled[moduleIndex],
+                        curEnabledPlatforms: enabledPlatforms[moduleIndex]
+                        );
                 }
 
                 if (module.normalAssembly != "")
@@ -450,64 +484,167 @@ namespace BTools.Management.EditorScripts
                     string normalAssemPath = Path.Combine(rootPath, module.normalAssembly);
                     string finalNormalAssemPath = Path.Combine(Application.dataPath.Remove(Application.dataPath.LastIndexOf('/')), normalAssemPath);
                     var normalAssem = AssemblyDef.Load(finalNormalAssemPath);
-                    List<string> newTargetPlatforms = new List<string>();
-                    if (moduleEnabled[i])
-                    {
-                        newTargetPlatforms.Add("Editor");
-                        for (int j = 0; j < module.supportedPlatforms.Count; j++) 
-                        {
-                            if (enabledPlatforms[i][j]) 
-                            {
-                                newTargetPlatforms.Add(module.supportedPlatforms[j]);
-                            }   
-                        }
-                    }
-                    bool modified = false;
-                    if (newTargetPlatforms.Count != normalAssem.includePlatforms.Count)
-                    {
-                        normalAssem.includePlatforms = newTargetPlatforms;
-                        modified = true;
-                    }
-                    else 
-                    {
-                        
-                        for(int j = normalAssem.includePlatforms.Count - 1; j >= 0; j--) 
-                        {
-                            if (!newTargetPlatforms.Contains(normalAssem.includePlatforms[j])) 
-                            {
-                                normalAssem.includePlatforms.RemoveAt(j);
-                                modified = true;
-                            }
-                        }
-                        for (int j = 0; j < newTargetPlatforms.Count; j++) 
-                        {
-                            if (!normalAssem.includePlatforms.Contains(newTargetPlatforms[j]))
-                            {
-                                normalAssem.includePlatforms.Add(newTargetPlatforms[j]);
-                                modified = true;    
-                            }
-                        }
-                    }
-                    if (moduleEnabled[i] && normalAssem.excludePlatforms.Count > 0)
-                    {
-                        normalAssem.excludePlatforms = new List<string>();
-                        modified = true;
-                    }
-                    else if(!moduleEnabled[i] && normalAssem.excludePlatforms.Count == 0)
-                    {
-                        normalAssem.excludePlatforms = AssemblyDef.DisabledExcludePlatforms;
-                        modified = true;
-                    }
-                    if (modified)
-                    {
-                        
-                        normalAssem.Write(finalNormalAssemPath);
-                    }
+                    ApplyAssemblySettings(
+                        assemPath: finalNormalAssemPath,
+                        assembly: normalAssem,
+                        moduleMeta: module,
+                        isEditorOnly: true,
+                        enabled: moduleEnabled[moduleIndex],
+                        curEnabledPlatforms: enabledPlatforms[moduleIndex]
+                        );
                 }
             }
             ApplyToProjectSettings();
+            ApplyDefines();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+        }
+
+        /// <summary>
+        /// Applys settings to a single assembly definition
+        /// </summary>
+        private static void ApplyAssemblySettings(string assemPath, AssemblyDef assembly, ModuleMetaData moduleMeta, bool isEditorOnly, bool enabled, List<bool> curEnabledPlatforms)
+        {
+            List<string> oldIncludedPlatforms = assembly.includePlatforms;
+            List<string> oldExcludedPlatforms = assembly.excludePlatforms;
+
+            if (enabled)
+            {
+                List<string> platformsToInclude = new List<string>();
+                platformsToInclude.Add("Editor");
+                if (!isEditorOnly)
+                {
+                    for (int platformIndex = 0; platformIndex < curEnabledPlatforms.Count; platformIndex++)
+                    {
+                        if (curEnabledPlatforms[platformIndex])
+                        {
+                            platformsToInclude.Add(moduleMeta.supportedPlatforms[platformIndex]);
+                        }
+                    }
+                }
+                assembly.excludePlatforms = new List<string>();
+                assembly.includePlatforms = platformsToInclude;
+            }
+            else
+            {
+                assembly.includePlatforms = new List<string>();
+                assembly.excludePlatforms = AssemblyDef.DisabledExcludePlatforms;
+            }
+
+            //Modifed check
+            if (AreListsDifferent(assembly.includePlatforms, oldIncludedPlatforms) || AreListsDifferent(assembly.excludePlatforms, oldExcludedPlatforms))
+            {
+                assembly.Write(assemPath);
+            }
+        }
+
+        private static bool AreListsDifferent(List<string> a, List<string> b)
+        {
+            if (a.Count != b.Count) { return true; }
+
+            for (int i = 0; i < a.Count; i++)
+            {
+                if (a[i] != b[i])
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+        private static void ConfirmExternalDependencies()
+        {
+            UpdateCachedPackageList();
+            for (int moduleIndex = 0; moduleIndex < modules.Count; moduleIndex++)
+            {
+                if (!moduleEnabled[moduleIndex]) { continue; }
+                var module = modules[moduleIndex];
+
+                foreach (var packageDependency in module.externalDependencies)
+                {
+                    InstallPackage(packageDependency);
+                }
+            }
+        }
+
+        private static void UpdateCachedPackageList() 
+        {
+            var request = Client.List();
+            while (!request.IsCompleted) { }
+            installedPackages = new List<string>();
+            foreach (var package in request.Result) 
+            {
+                installedPackages.Add(package.name);
+            }
+        }
+
+        private static void InstallPackage(ModuleMetaData.ExternalPackage packageInfo) 
+        {
+            if (installedPackages.Contains(packageInfo.name)) { return; }
+            var request = Client.Add(packageInfo.source);
+            while (!request.IsCompleted) { }
+            if (request.Status == StatusCode.Success)
+            {
+                Debug.Log("Package Installed:" + packageInfo.name);
+            }
+            else 
+            {
+                Debug.Log(request.Error.message);
+            }
+        }
+
+        private static void LoadDefines() 
+        {
+            var curBuildTarget = NamedBuildTarget.FromBuildTargetGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+            string curDefinesStr = PlayerSettings.GetScriptingDefineSymbols(curBuildTarget);
+            List<string> defines = new List<string>(curDefinesStr.Split(';'));
+            for (int moduleIndex = 0; moduleIndex < modules.Count; moduleIndex++)
+            {
+                for (int defineIndex = 0; defineIndex < modules[moduleIndex].defineSettings.Count; defineIndex++)
+                {
+                    enabledDefineSettings[moduleIndex][defineIndex] = defines.Contains(modules[moduleIndex].defineSettings[defineIndex]);
+                }
+            }
+        }
+
+        private static void ApplyDefines() 
+        {
+            var curBuildTarget = NamedBuildTarget.FromBuildTargetGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+            string curDefinesStr = PlayerSettings.GetScriptingDefineSymbols(curBuildTarget);
+            List<string> defines = new List<string>(curDefinesStr.Split(';'));
+            bool modified = false;
+            for (int moduleIndex = 0; moduleIndex < modules.Count; moduleIndex++)
+            {
+                for (int defineIndex = 0; defineIndex < modules[moduleIndex].defineSettings.Count; defineIndex++)
+                {
+                    if (defines.Contains(modules[moduleIndex].defineSettings[defineIndex]) && !enabledDefineSettings[moduleIndex][defineIndex])
+                    {
+                        defines.Remove(modules[moduleIndex].defineSettings[defineIndex]);
+                        modified = true;
+                    }
+                    else if (!defines.Contains(modules[moduleIndex].defineSettings[defineIndex]) && enabledDefineSettings[moduleIndex][defineIndex])
+                    {
+                        defines.Add(modules[moduleIndex].defineSettings[defineIndex]);
+                        modified = true;
+                    }
+                }
+            }
+            if (modified)
+            {
+                string newDefines = "";
+                for (int i = 0; i < defines.Count; i++) 
+                {
+                    if (defines[i] == string.Empty) { continue; }
+                    newDefines += defines[i];
+                    if (i != defines.Count - 1) 
+                    {
+                        newDefines += ";";
+                    }
+                }
+                PlayerSettings.SetScriptingDefineSymbols(curBuildTarget, newDefines);
+            }
         }
     }
 }
