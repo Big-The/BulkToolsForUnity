@@ -31,5 +31,5 @@ MonoBehaviour:
   internalDependencies: []
   externalDependencies: []
   defineSettings:
-  - MagicEventTracking
+  - DetailedMagicEventTracking
   experimental: 1

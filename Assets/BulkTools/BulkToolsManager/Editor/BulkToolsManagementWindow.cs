@@ -459,6 +459,7 @@ namespace BTools.Management.EditorScripts
         /// </summary>
         private static void ApplyEnabledStates()
         {
+            ApplyDefines();
             ConfirmExternalDependencies();
             for (int moduleIndex = 0; moduleIndex < modules.Count; moduleIndex++)
             {
@@ -495,7 +496,6 @@ namespace BTools.Management.EditorScripts
                 }
             }
             ApplyToProjectSettings();
-            ApplyDefines();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }

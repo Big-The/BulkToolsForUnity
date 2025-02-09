@@ -48,10 +48,10 @@ Exact supported build targets may vary by module but in general I will be target
 
 ## [0.1.0] First Publicaly Avalible Version
 - Most functionality required to make the package easily useable by people other than me is present
-- Ability to add "settings" in the form of defines that can be toggled in the editor window
-
-## [0.2.0] External Dependencies Support
-- Support for modules that have dependencies outside of the other modules. For example: depends on TMPro
+  - Cleanup the main window UI.
+  - Add READMEs for each module.
+- (Complete) Ability to add "settings" in the form of defines that can be toggled in the editor window
+- (Complete) Support for modules that have dependencies outside of the other modules. For example: depends on TMPro
   - Automatically add required external dependencies
 
 ## All Versions In-between

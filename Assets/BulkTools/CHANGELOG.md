@@ -1,5 +1,20 @@
 # Changes:
 
+## [0.0.7]
+
+### Fixes:
+- Magic Events can now no longer have the same callback added to the a single event name multiple times
+
+### Added:
+- Added global settings support for the modules using symbol defines
+- Added external dependency support
+
+### Updated:
+- Magic Events now has a new Editor Window that can be used to inspect what events are being called
+  - Includes a define symbol setting that enables more detail but adds some overhead in the editor. Extra detail added:
+    - Lists callbacks that respond to each event
+    - Extra tab that lists all actively listening callbacks
+
 ## [0.0.6]
 
 ### Fixes:
