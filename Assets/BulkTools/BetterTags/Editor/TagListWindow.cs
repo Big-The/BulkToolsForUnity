@@ -9,41 +9,65 @@ namespace BTools.BTags.EditorScripts
 {
     public class TagListWindow : EditorWindow
     {
-        private TagListAsset tagList;
-        private Editor tagListEditor;
+        private static TagListAsset cachedTagList;
+        private static Editor tagListEditor;
 
         public static void InitWindow(TagListAsset tagList)
         {
             TagListWindow window = (TagListWindow)EditorWindow.GetWindow(typeof (TagListWindow));
-            window.tagList = tagList;
             window.titleContent = new GUIContent("Tag List");
-            window.SetInspector();
+            SetTagList(tagList);
+        }
+
+        public static void SetTagList(TagListAsset tagList) 
+        {
+            cachedTagList = tagList;
+            SetInspector();
+        }
+
+        [SettingsProvider]
+        public static SettingsProvider CreateTagListSettingsProvider() 
+        {
+            var provider = new SettingsProvider("Project/BulkTools/Better Tags", SettingsScope.Project)
+            {
+                label = "Better Tags: Tag List",
+                guiHandler = (searchContext) =>
+                {
+                    DrawGUI(false);
+                }
+            };
+
+            return provider;
         }
 
         public void OnGUI() 
         {
-            if(tagList)
+            DrawGUI(true);
+        }
+
+        private static void DrawGUI(bool standaloneWindowMode) 
+        {
+            if (cachedTagList)
             {
-                tagListEditor.OnInspectorGUI(); 
-                if(EditorUtility.IsDirty(tagList))
-                {
-                    titleContent = new GUIContent("Tag List*");
-                }
-                else
-                {
-                    titleContent = new GUIContent("Tag List");
-                }
+                tagListEditor.OnInspectorGUI();
             }
             else
             {
-                if(TagListEditor.OpenTagListCheck())
+                if (TagListEditor.OpenTagListCheck())
                 {
-                    TagListEditor.OpenTagList();
+                    if (standaloneWindowMode)
+                    {
+                        TagListEditor.OpenTagList();
+                    }
+                    else 
+                    {
+                        SetTagList(TagListEditor.LoadTagList());
+                    }
                 }
                 else
                 {
                     GUILayout.Label("Missing Tag List");
-                    if(TagListEditor.CreateNewTagListCheck())
+                    if (TagListEditor.CreateNewTagListCheck())
                     {
                         if (GUILayout.Button("Create new tag list")) TagListEditor.CreateNewTagList();
                     }
@@ -51,10 +75,10 @@ namespace BTools.BTags.EditorScripts
             }
         }
 
-        private void SetInspector()
+        private static void SetInspector()
         {
             if (tagListEditor) { DestroyImmediate(tagListEditor); }
-            if (tagList) { tagListEditor = Editor.CreateEditor(tagList); }
+            if (cachedTagList) { tagListEditor = Editor.CreateEditor(cachedTagList); }
         }
 
         public void OnDisable() 

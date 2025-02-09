@@ -11,9 +11,9 @@ namespace BTools.Management.EditorScripts
         [SettingsProvider]
         public static SettingsProvider CreateBulkToolsSettingsProvider()
         {
-            var provider = new SettingsProvider("Project/BulkTools", SettingsScope.Project)
+            var provider = new SettingsProvider("Project/BulkTools/Module Manager", SettingsScope.Project)
             {
-                label = "Bulk Tools",
+                label = "Bulk Tools Module Manager",
                 guiHandler = (searchContext) =>
                 {
                     BulkToolsManagementWindow.DrawGUI();

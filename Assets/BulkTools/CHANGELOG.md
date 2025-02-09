@@ -14,6 +14,7 @@
   - Includes a define symbol setting that enables more detail but adds some overhead in the editor. Extra detail added:
     - Lists callbacks that respond to each event
     - Extra tab that lists all actively listening callbacks
+- Better Tags config can now be accessed in the project settings window
 
 ## [0.0.6]
 
