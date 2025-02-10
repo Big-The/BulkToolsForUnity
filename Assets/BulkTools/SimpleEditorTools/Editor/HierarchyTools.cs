@@ -17,7 +17,7 @@ namespace BTools.SimpleEditorTools
             {
                 children.Add(child);
             }
-            Undo.RecordObjects(children.ToArray(), "Sort Children");
+            Undo.RegisterFullObjectHierarchyUndo(parent, "Sort Children");
             children.Sort((x, y) => { return x.name.CompareTo(y.name); });
             foreach (Transform child in children)
             {

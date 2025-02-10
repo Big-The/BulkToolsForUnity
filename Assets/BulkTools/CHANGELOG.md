@@ -5,6 +5,7 @@
 ### Fixes:
 - Magic Events can now no longer have the same callback added to the a single event name multiple times
 - Fixed BetterTags add tag popup apearing in only on the primary monitor on multi monitor setups
+- Fixed HierarchyTools sort children undo not working
 
 ### Added:
 - Added global settings support for the modules using symbol defines
