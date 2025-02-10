@@ -7,7 +7,7 @@ namespace BTools.SimpleEditorTools
 {
     public class GameObjectRandomness : PopupWindowContent
     {
-        private static Vector2 popupSize = new Vector2(200, 280);
+        private static Vector2 popupSize = new Vector2(200, 310);
         private static List<Transform> transforms = new List<Transform>();
         private static bool open = false;
         private static bool applied = false;
@@ -65,6 +65,9 @@ namespace BTools.SimpleEditorTools
                                             popupSize.y);
 
             EditorGUILayout.LabelField("Object Randomization", EditorStyles.boldLabel);
+            EditorGUILayout.Space();
+
+            randomSeed = EditorGUILayout.IntField("Seed", randomSeed);
             EditorGUILayout.Space();
 
             EditorGUILayout.LabelField("Translation Offset:");
@@ -154,7 +157,6 @@ namespace BTools.SimpleEditorTools
             base.OnOpen();
             var sceneWindow = EditorWindow.GetWindow(typeof(SceneView));
             mainEditorWindow = sceneWindow.position;
-            randomSeed = Random.Range(int.MinValue, int.MaxValue);
             Undo.RegisterCompleteObjectUndo(transforms.ToArray(), "RandomizeObjects");
             startingPositions = new List<(Vector3 position, Vector3 roation, Vector3 scale)>(transforms.Count);
             for (int transformIndex = 0; transformIndex < transforms.Count; transformIndex++)
