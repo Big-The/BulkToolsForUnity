@@ -1,6 +1,8 @@
 {
     "name": "MagicEventsEditor",
-    "references": [],
+    "references": [
+        "MagicEventsRuntime"
+    ],
     "includePlatforms": [
         "Editor"
     ],

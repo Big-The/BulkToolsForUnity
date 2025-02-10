@@ -1,6 +1,5 @@
 {
     "name": "MoreAttributesEditor",
-    "rootNamespace": "",
     "references": [
         "GUID:883b773d758e16d4d9bcecf79c757a66"
     ],
@@ -8,7 +7,6 @@
         "Editor"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

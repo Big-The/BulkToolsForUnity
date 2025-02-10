@@ -19,11 +19,12 @@ namespace BTools.BTags.EditorScripts
 
         public override void OnGUI(Rect rect)
         {
+            Rect mainEditorWindow = EditorGUIUtility.GetMainWindowPosition();
             editorWindow.minSize = popupSize;
             editorWindow.maxSize = popupSize;
-            editorWindow.position = new Rect(EditorGUIUtility.GetMainWindowPosition().width / 2 - popupSize.x / 2, 
-                                            EditorGUIUtility.GetMainWindowPosition().height / 2 - popupSize.y / 2, 
-                                            popupSize.x, 
+            editorWindow.position = new Rect(mainEditorWindow.x + mainEditorWindow.width / 2 - popupSize.x / 2,
+                                            mainEditorWindow.y + mainEditorWindow.height / 2 - popupSize.y / 2,
+                                            popupSize.x,
                                             popupSize.y);
 
             GUILayout.Label($"Adding Tag to {targetGameObjects.Count} GameObjects and {targetComponents.Count} Components");

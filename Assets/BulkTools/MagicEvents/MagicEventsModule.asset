@@ -28,5 +28,14 @@ MonoBehaviour:
   - WebGL
   - WindowsStandalone64
   - XboxOne
-  dependencies: []
+  internalDependencies: []
+  externalDependencies: []
+  defineSettings:
+  - defineSymbol: DetailedMagicEventTracking
+    description: 'DetailedMagicEventTracking: Enables more detaild tracking in the
+      Magic Event Tracker window, at the cost of a small perfromance hit.
+
+      A
+      small performance hit comes from the extra data compilation occouring each
+      event call.'
   experimental: 1

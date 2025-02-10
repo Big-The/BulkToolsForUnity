@@ -10,10 +10,14 @@ namespace BTools.MagicEvents
     /// </summary>
     public class MagicEvent
     {
+#if DetailedMagicEventTracking && UNITY_EDITOR
+        public const string eventInfoLoggingEventName = "__INTERNAL_EVENT_LOG__";
+#endif
+
         #region Static Functionality
         public delegate void MagicEventCallback(MagicEventContext context);
 
-        private static Dictionary<string, List<MagicEventCallback>> eventCallbacks = new Dictionary<string, List<MagicEventCallback>>();
+        internal static Dictionary<string, List<MagicEventCallback>> eventCallbacks = new Dictionary<string, List<MagicEventCallback>>();
 
         /// <summary>
         /// 
@@ -24,6 +28,7 @@ namespace BTools.MagicEvents
         {
             if (eventCallbacks.TryGetValue(eventName, out List<MagicEventCallback> callbackSet))
             {
+                if (callbackSet.Contains(callback)) { return; }
                 callbackSet.Add(callback);
             }
             else
@@ -49,13 +54,13 @@ namespace BTools.MagicEvents
             }
         }
 
-        #endregion
+#endregion
 
 
 
         #region Instance Functionality
         private string name = string.Empty;
-        MagicEventContext context;
+        private MagicEventContext context;
 
         public MagicEvent(string name)
         {
@@ -96,16 +101,33 @@ namespace BTools.MagicEvents
 
         public void Invoke()
         {
+#if DetailedMagicEventTracking && UNITY_EDITOR
+            InvokedMagicEventEditorInfo invokeInfo = new InvokedMagicEventEditorInfo()
+            {
+                eventName = name,
+                context = context,
+                callbackResults = new List<(MagicEventCallback callback, bool hadErrors)>()
+            };
+#endif
             if (eventCallbacks.TryGetValue(name, out List<MagicEventCallback> callbackSet))
             {
                 foreach (MagicEventCallback callback in callbackSet)
                 {
                     try
                     {
+#if DetailedMagicEventTracking && UNITY_EDITOR
                         callback.Invoke(context);
+                        invokeInfo.callbackResults.Add((callback, false));
                     }
                     catch (System.Exception e)
                     {
+                        invokeInfo.callbackResults.Add((callback, true));
+#else
+                    callback.Invoke(context);
+                    }
+                    catch (System.Exception e)
+                    {
+#endif
                         Debug.LogException(e);
                     }
                 }
@@ -117,16 +139,33 @@ namespace BTools.MagicEvents
                 {
                     try
                     {
+#if DetailedMagicEventTracking && UNITY_EDITOR
+                        callback.Invoke(context);
+                        invokeInfo.callbackResults.Add((callback, false));
+                    }
+                    catch (System.Exception e)
+                    {
+                        invokeInfo.callbackResults.Add((callback, true));
+#else
                         callback.Invoke(context);
                     }
                     catch (System.Exception e)
                     {
+#endif
                         Debug.LogException(e);
                     }
                 }
             }
+#if DetailedMagicEventTracking && UNITY_EDITOR
+            if (name != eventInfoLoggingEventName) 
+            {
+                new MagicEvent(eventInfoLoggingEventName)
+                    .AddData("Info", invokeInfo)
+                    .Invoke();
+            }
+#endif
         }
-        #endregion
+#endregion
 
         public class DataAlreadyExistsWithIDException : System.Exception
         {
@@ -160,4 +199,39 @@ namespace BTools.MagicEvents
             return default(T);
         }
     }
+
+#if DetailedMagicEventTracking && UNITY_EDITOR
+    public struct InvokedMagicEventEditorInfo 
+    {
+        public string eventName;
+        public MagicEventContext context;
+        public List<(MagicEvent.MagicEventCallback callback, bool hadErrors)> callbackResults;
+    }
+
+    public static class MagicEventEditorInfoTool
+    {
+        public static List<(string dataKey, object data)> ExtractDataValues(MagicEventContext context) 
+        {
+            List<(string dataKey, object data)> values = new List<(string dataKey, object data)>();
+            if(context.data == null) { return values; }
+            foreach (var data in context.data) 
+            {
+                values.Add((data.Key, data.Value));
+            }
+            return values;
+        }
+
+        public static List<(string eventName, List<MagicEvent.MagicEventCallback> callbacks)> GetEventListeners() 
+        {
+            List<(string eventName, List<MagicEvent.MagicEventCallback> callbacks)> values = new List<(string eventName, List<MagicEvent.MagicEventCallback> callbacks)>();
+
+            foreach (var callbackSet in MagicEvent.eventCallbacks) 
+            {
+                values.Add((callbackSet.Key, new List<MagicEvent.MagicEventCallback>(callbackSet.Value)));
+            }
+
+            return values;
+        }
+    }
+#endif
 }

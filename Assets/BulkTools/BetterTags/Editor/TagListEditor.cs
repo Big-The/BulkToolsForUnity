@@ -62,10 +62,13 @@ namespace BTools.BTags.EditorScripts
         [MenuItem("BulkTools/BTags/Open Tag List")]
         public static void OpenTagList()
         {
+            TagListWindow.InitWindow(LoadTagList());
+        }
+
+        public static TagListAsset LoadTagList() 
+        {
             string combinedPath = ObjectTags.tagListPath + "/" + ObjectTags.tagListName + ".asset";
-            TagListAsset targetAsset = AssetDatabase.LoadAssetAtPath<TagListAsset>(combinedPath);
-            // Selection.activeObject = targetAsset;
-            TagListWindow.InitWindow(targetAsset);
+            return AssetDatabase.LoadAssetAtPath<TagListAsset>(combinedPath);
         }
     }
 }

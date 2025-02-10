@@ -1,6 +1,6 @@
 {
   "name": "com.bigthe.bulktools",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "displayName": "Bulk Tools",
   "description": "A collection of modular tools. Each tool can be enabled or disabled at the users discretion.",
   "unity": "2022.3",
