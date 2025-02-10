@@ -11,6 +11,7 @@
 - Added global settings support for the modules using symbol defines
 - Added external dependency support
 - Added GameObjectRandomness to the SimpleEditorTools module
+- Added BitMask attribute to More Attributes module
 
 ### Updated:
 - Magic Events now has a new Editor Window that can be used to inspect what events are being called
