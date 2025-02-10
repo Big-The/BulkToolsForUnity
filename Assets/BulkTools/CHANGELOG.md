@@ -4,10 +4,12 @@
 
 ### Fixes:
 - Magic Events can now no longer have the same callback added to the a single event name multiple times
+- Fixed BetterTags add tag popup apearing in only on the primary monitor on multi monitor setups
 
 ### Added:
 - Added global settings support for the modules using symbol defines
 - Added external dependency support
+- Added GameObjectRandomness to the SimpleEditorTools module
 
 ### Updated:
 - Magic Events now has a new Editor Window that can be used to inspect what events are being called
@@ -15,6 +17,7 @@
     - Lists callbacks that respond to each event
     - Extra tab that lists all actively listening callbacks
 - Better Tags config can now be accessed in the project settings window
+- Changed the SimpleEditorTools class to HierarchyTools as it is not the only class in the module now
 
 ## [0.0.6]
 
