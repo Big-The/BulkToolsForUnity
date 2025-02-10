@@ -16,7 +16,7 @@ Bulk Tools is my modular tools package. All future tools I make will be made as 
 # Importing Into Unity
 - Open Package Manager
 - Select Add package from git URL
-- paste https://github.com/Ryantheinventor/BulkToolsForUnity.git?path=/Assets/BulkTools
+- paste https://github.com/Big-The/BulkToolsForUnity.git?path=/Assets/BulkTools
 
 # Package Usage
 After importing everything is enabled on all possible platforms by default. To change any configuration of the included modules navigate to the Module Manager window via the BulkTools/Module Manager menu item. 
