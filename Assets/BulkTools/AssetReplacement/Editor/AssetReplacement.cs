@@ -10,12 +10,21 @@ public static class AssetReplacement
     //Asset Type, File Filters
     private static Dictionary<Type, string[]> assetFileFilters = new Dictionary<Type, string[]>() 
     {
-        { 
+        //Any asset type I find listed as supported on any unity page has been added here, I have not checked every one myself.
+        {
             typeof(Texture2D),
             new string[]
             {
                 "Image Files",
-                "png,jpg,jpeg"
+                "png,jpg,jpeg,bmp,tif,tga,psd"
+            }
+        },
+        {
+            typeof(AudioClip),
+            new string[]
+            {
+                "Audio Files",
+                "mp3,wav,ogg,flac,aiff,aif,mod,it,s3m,xm"
             }
         }
     };
@@ -39,7 +48,6 @@ public static class AssetReplacement
         return Selection.count == 1 && Selection.count == Selection.assetGUIDs.Length && AssetDatabase.IsMainAsset(Selection.activeObject) && assetFileFilters.ContainsKey(Selection.activeObject.GetType());
     }
 
-    //TODO: Currently only replaces the bytes of the asset when in keepOldName mode (Unity is fine with this?). Should be changing the file extension as well in this case.
     //TODO: Add support for doing this in mass? Not sure how I'll do that yet but I would like it to be possible somehow.
     public static void TryReplaceAsset(Type assetType, string assetPath, bool keepOldName) 
     {
@@ -55,26 +63,34 @@ public static class AssetReplacement
 
         if(replacementPath == null || replacementPath == string.Empty) { return; }
 
+        string newFileName;
         if (keepOldName)
         {
-            File.WriteAllBytes(realAssetPath, File.ReadAllBytes(replacementPath));
+            newFileName = assetPath.Substring(assetPath.LastIndexOf('/') + 1);
+            newFileName = newFileName.Remove(newFileName.LastIndexOf('.'));
         }
         else 
         {
-            string assetHomePath = realAssetPath.Remove(realAssetPath.LastIndexOf("/"));
-            string realAssetMetaPath = realAssetPath + ".meta";
+            newFileName = replacementPath.Substring(replacementPath.LastIndexOf('/') + 1);
+            newFileName = newFileName.Remove(newFileName.LastIndexOf('.'));
+        }
 
-            string replacementFileName = replacementPath.Substring(replacementPath.LastIndexOf("/") + 1);
-            string replacementAssetPath = assetHomePath + "/" + replacementFileName;
-            string replacementMetaPath = assetHomePath + "/" + replacementFileName + ".meta";
 
-            File.WriteAllBytes(replacementAssetPath, File.ReadAllBytes(replacementPath));
-            File.WriteAllText(replacementMetaPath, File.ReadAllText(realAssetMetaPath));
-            if (realAssetPath != replacementAssetPath) 
-            {
-                File.Delete(realAssetPath);
-                File.Delete(realAssetMetaPath);
-            }
+        string newFileExtension = replacementPath.Substring(replacementPath.LastIndexOf('.'));
+
+        
+        string assetHomePath = realAssetPath.Remove(realAssetPath.LastIndexOf("/"));
+        string realAssetMetaPath = realAssetPath + ".meta";
+
+        string replacementAssetPath = assetHomePath + "/" + newFileName + newFileExtension;
+        string replacementMetaPath = replacementAssetPath + ".meta";
+
+        File.WriteAllBytes(replacementAssetPath, File.ReadAllBytes(replacementPath));
+        File.WriteAllText(replacementMetaPath, File.ReadAllText(realAssetMetaPath));
+        if (realAssetPath != replacementAssetPath) 
+        {
+            File.Delete(realAssetPath);
+            File.Delete(realAssetMetaPath);
         }
 
         AssetDatabase.Refresh();

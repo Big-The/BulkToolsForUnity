@@ -1,5 +1,11 @@
 # Changes:
 
+## [0.0.8]
+
+### Fixes:
+- Asset Replacement now takes file type into account correctly
+- Magic Events module should now be able to handle null data
+
 ## [0.0.7]
 
 ### Fixes:
@@ -20,6 +26,8 @@
     - Extra tab that lists all actively listening callbacks
 - Better Tags config can now be accessed in the project settings window
 - Changed the SimpleEditorTools class to HierarchyTools as it is not the only class in the module now
+
+
 
 ## [0.0.6]
 

@@ -26,6 +26,7 @@ namespace BTools.MagicEvents
         /// <param name="callback"></param>
         public static void AddListener(string eventName, MagicEventCallback callback)
         {
+            if (callback == null) { return; }
             if (eventCallbacks.TryGetValue(eventName, out List<MagicEventCallback> callbackSet))
             {
                 if (callbackSet.Contains(callback)) { return; }
@@ -44,6 +45,7 @@ namespace BTools.MagicEvents
         /// <param name="callback"></param>
         public static void RemoveListener(string eventName, MagicEventCallback callback)
         {
+            if(callback == null) { return; }
             if (eventCallbacks.TryGetValue(eventName, out List<MagicEventCallback> callbackSet))
             {
                 callbackSet.Remove(callback);
@@ -190,7 +192,7 @@ namespace BTools.MagicEvents
 
             if (data.TryGetValue(dataID, out object value))
             {
-                if (typeof(T).IsAssignableFrom(value.GetType()))
+                if (value != null && typeof(T).IsAssignableFrom(value.GetType()))
                 {
                     return (T)value;
                 }

@@ -12,6 +12,7 @@ public class EventsTesterSender : MonoBehaviour
         {
             new MagicEvent("TestSpaceEvent")
                 .AddData("Down", true)
+                .AddData("Null", null)
                 .Invoke();
         }
         if (Input.GetKeyUp(KeyCode.Space)) 
