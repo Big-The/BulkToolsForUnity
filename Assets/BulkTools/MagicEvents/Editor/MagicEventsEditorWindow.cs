@@ -132,7 +132,8 @@ namespace BTools.MagicEvents.EditorScripts
                 EditorGUI.indentLevel++;
                 foreach(var dataItem in extractedContext) 
                 {
-                    EditorGUILayout.LabelField(new GUIContent($"{dataItem.dataKey}({dataItem.data.GetType().Name}) : {dataItem.data}"));
+                    string typeName = dataItem.data == null ? "null" : dataItem.data.GetType().Name;
+                    EditorGUILayout.LabelField(new GUIContent($"{dataItem.dataKey}({typeName}) : {dataItem.data}"));
                 }
                 EditorGUI.indentLevel--;
             }

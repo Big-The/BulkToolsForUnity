@@ -4,6 +4,7 @@
 
 ### Fixes:
 - Asset Replacement now takes file type into account correctly
+- Magic Events module should now be able to handle null data
 
 ## [0.0.7]
 
