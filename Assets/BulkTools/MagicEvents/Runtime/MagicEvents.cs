@@ -19,6 +19,9 @@ namespace BTools.MagicEvents
 
         internal static Dictionary<string, List<MagicEventCallback>> eventCallbacks = new Dictionary<string, List<MagicEventCallback>>();
 
+        private static Queue<MagicEvent> eventQueue = new Queue<MagicEvent>();
+        private static bool waitingOnInvoke = false;
+
         /// <summary>
         /// 
         /// </summary>
@@ -103,6 +106,13 @@ namespace BTools.MagicEvents
 
         public void Invoke()
         {
+            if (waitingOnInvoke) 
+            {
+                eventQueue.Enqueue(this);
+                return;
+            }
+
+            waitingOnInvoke = true;
 #if DetailedMagicEventTracking && UNITY_EDITOR
             InvokedMagicEventEditorInfo invokeInfo = new InvokedMagicEventEditorInfo()
             {
@@ -158,6 +168,8 @@ namespace BTools.MagicEvents
                     }
                 }
             }
+            waitingOnInvoke = false;
+
 #if DetailedMagicEventTracking && UNITY_EDITOR
             if (name != eventInfoLoggingEventName) 
             {
@@ -166,6 +178,10 @@ namespace BTools.MagicEvents
                     .Invoke();
             }
 #endif
+            if(eventQueue.Count > 0) 
+            {
+                eventQueue.Dequeue().Invoke();
+            }
         }
 #endregion
 
