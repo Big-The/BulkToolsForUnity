@@ -17,7 +17,7 @@ MonoBehaviour:
     include: \n- List Extensions (Shuffling)\n- RandomExtras (Sequences, Weighted
     Random)\n- Coroutines With Results"
   normalAssembly: Runtime/UtilPackRuntime.asmdef
-  editorAssembly: 
+  editorAssembly: Editor/UtilPackEditor.asmdef
   supportedPlatforms:
   - Android
   - iOS
@@ -28,5 +28,10 @@ MonoBehaviour:
   - WebGL
   - WindowsStandalone64
   - XboxOne
-  dependencies: []
+  internalDependencies: []
+  externalDependencies: []
+  defineSettings:
+  - defineSymbol: DisableSafetySerializedType
+    description: Disables the safety mechanism that prevents type lists of excessive
+      size. It is highly recomended you do not disable this safety.
   experimental: 1
