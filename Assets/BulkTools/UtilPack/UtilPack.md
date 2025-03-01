@@ -1,7 +1,8 @@
 # Util Pack Module
 
 ## About
-Includes multiple simple util extension methods, and variable tpyes.
+This module acts as the miscellaneous module, and will be where I put any tools that seem to small to bother with giving them their own module.
+It includes multiple simple util extension methods, and variable types.
 Expanded systems include: 
 - List Extensions (Shuffling)
 - RandomExtras (Sequences, Weighted Random)
