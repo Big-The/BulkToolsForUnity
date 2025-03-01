@@ -13,11 +13,14 @@ MonoBehaviour:
   m_Name: UtilPackModule
   m_EditorClassIdentifier: 
   moduleName: Util Pack
-  description: "Includes multiple simple util extension methods.\nExpanded systems
-    include: \n- List Extensions (Shuffling)\n- RandomExtras (Sequences, Weighted
-    Random)\n- Coroutines With Results"
+  description: "This module acts as the miscellaneous module, and will be where I
+    put any tools that seem to small to bother with giving them their own module.\r\nIt
+    includes multiple simple util extension methods, and variable types.\r\nExpanded
+    systems include: \r\n- List Extensions (Shuffling)\r\n- RandomExtras (Sequences,
+    Weighted Random)\r\n- Coroutines With Results\r\n- SerializableTypes (Type selection
+    in the inspector)"
   normalAssembly: Runtime/UtilPackRuntime.asmdef
-  editorAssembly: 
+  editorAssembly: Editor/UtilPackEditor.asmdef
   supportedPlatforms:
   - Android
   - iOS
@@ -28,5 +31,10 @@ MonoBehaviour:
   - WebGL
   - WindowsStandalone64
   - XboxOne
-  dependencies: []
+  internalDependencies: []
+  externalDependencies: []
+  defineSettings:
+  - defineSymbol: DisableSafetySerializedType
+    description: Disables the safety mechanism that prevents type lists of excessive
+      size. It is highly recomended you do not disable this safety.
   experimental: 1

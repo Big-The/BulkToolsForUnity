@@ -104,6 +104,9 @@ namespace BTools.MagicEvents
             return this;
         }
 
+        /// <summary>
+        /// Adds the event to the event queue, triggering it when it is reached. The event queue enables any previous events to finish invoking before starting a new one.
+        /// </summary>
         public void Invoke()
         {
             if (waitingOnInvoke) 

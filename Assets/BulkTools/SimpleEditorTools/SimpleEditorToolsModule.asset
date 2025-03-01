@@ -18,5 +18,7 @@ MonoBehaviour:
   normalAssembly: 
   editorAssembly: Editor/SimpleEditorTools.asmdef
   supportedPlatforms: []
-  dependencies: []
-  experimental: 0
+  internalDependencies: []
+  externalDependencies: []
+  defineSettings: []
+  experimental: 1

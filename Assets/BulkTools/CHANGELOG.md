@@ -1,5 +1,17 @@
 # Changes:
 
+## [0.1.0]
+
+### Fixes:
+- Fixed some missing and inaccurate descriptions
+- Fixed internal assembly system treating all assemblies as editor assemblies preventing any builds, and in some cases basic functionality. 
+
+### Added:
+- Added READMEs to all modules
+- Added serializeable types to the UtilPack module
+
+
+
 ## [0.0.9]
 
 ### Fixes:
