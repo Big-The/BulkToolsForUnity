@@ -35,7 +35,7 @@ namespace BTools.ObjectPooling
                 if (myPool)
                 {
                     Debug.LogError("Pooled object destroyed. Try using ObjectPool.DestroyOrRepool() instead.");
-                    myPool.ReplaceObjectAt(poolObjectID);
+                    myPool.CreateNewObject(poolObjectID);
                 }
             }
         }

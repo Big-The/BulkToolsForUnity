@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BTools.UtilPack
 {
-    //Based on https://www.dropbox.com/scl/fi/uhb9l2dcvfzgxbduqkvao/SerializableType.cs?rlkey=py7n6asrlu94t8y0qt6hh4kcj&e=1&dl=0
+    //Serialization based on https://www.dropbox.com/scl/fi/uhb9l2dcvfzgxbduqkvao/SerializableType.cs?rlkey=py7n6asrlu94t8y0qt6hh4kcj&e=1&dl=0
     //found in https://discussions.unity.com/t/assign-a-variable-of-type-type-on-the-inspector-or-best-work-around/202952/3
     [System.Serializable]
     public class SerializableType : ISerializationCallbackReceiver
@@ -26,39 +26,64 @@ namespace BTools.UtilPack
             data = null;
         }
 
+        /// <summary>
+        /// Get a new instance of the targeted type
+        /// </summary>
+        /// <returns></returns>
         public object GetNewInstanceOfType() 
         {
             return Activator.CreateInstance(type);
         }
 
+        //Allows the SerializableType object to be used in place of a normal Type object for example in Unity's GameObject.AddComponent(Type type)
         public static implicit operator Type(SerializableType self) 
         {
             return self.type;
         }
 
-        public static System.Type Read(BinaryReader aReader)
+        #region Serialization Callbacks
+        public void OnBeforeSerialize()
         {
-            var paramCount = aReader.ReadByte();
-            if (paramCount == 0xFF)
-                return null;
-            var typeName = aReader.ReadString();
-            var type = System.Type.GetType(typeName);
-            if (type == null)
-                throw new System.Exception("Can't find type; '" + typeName + "'");
-            if (type.IsGenericTypeDefinition && paramCount > 0)
-            {
-                var p = new System.Type[paramCount];
-                for (int i = 0; i < paramCount; i++)
-                {
-                    p[i] = Read(aReader);
-                }
-                type = type.MakeGenericType(p);
-            }
-            return type;
+            data = TypeToBytes(type);
         }
 
 
-        public static void Write(BinaryWriter aWriter, System.Type aType)
+        public void OnAfterDeserialize()
+        {
+            type = BytesToType(data);
+        }
+        #endregion
+
+        /// <summary>
+        /// Convert bytes to a type.
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        private static Type BytesToType(byte[] bytes) 
+        {
+            using (var stream = new MemoryStream(bytes))
+            using (var r = new BinaryReader(stream))
+            {
+                return Read(r);
+            }
+        }
+
+        /// <summary>
+        /// Convert a type to bytes
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private static byte[] TypeToBytes(Type type) 
+        {
+            using (var stream = new MemoryStream())
+            using (var w = new BinaryWriter(stream))
+            {
+                Write(w, type);
+                return stream.ToArray();
+            }
+        }
+
+        private static void Write(BinaryWriter aWriter, System.Type aType)
         {
             if (aType == null)
             {
@@ -81,47 +106,41 @@ namespace BTools.UtilPack
             aWriter.Write(aType.AssemblyQualifiedName);
         }
 
-
-
-
-        public void OnBeforeSerialize()
+        private static System.Type Read(BinaryReader aReader)
         {
-            data = TypeToBytes(type);
-        }
-
-
-        public void OnAfterDeserialize()
-        {
-            type = BytesToType(data);
-        }
-
-        public static Type BytesToType(byte[] bytes) 
-        {
-            using (var stream = new MemoryStream(bytes))
-            using (var r = new BinaryReader(stream))
+            var paramCount = aReader.ReadByte();
+            if (paramCount == 0xFF)
+                return null;
+            var typeName = aReader.ReadString();
+            var type = System.Type.GetType(typeName);
+            if (type == null)
+                throw new System.Exception("Can't find type; '" + typeName + "'");
+            if (type.IsGenericTypeDefinition && paramCount > 0)
             {
-                return Read(r);
+                var p = new System.Type[paramCount];
+                for (int i = 0; i < paramCount; i++)
+                {
+                    p[i] = Read(aReader);
+                }
+                type = type.MakeGenericType(p);
             }
-        }
-
-        public static byte[] TypeToBytes(Type type) 
-        {
-            using (var stream = new MemoryStream())
-            using (var w = new BinaryWriter(stream))
-            {
-                Write(w, type);
-                return stream.ToArray();
-            }
+            return type;
         }
     }
-}
 
-[AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-public class TypeRestrictionAttribute : Attribute 
-{
-    public Type type;
-    public TypeRestrictionAttribute(Type type) 
+    /// <summary>
+    /// Used by the inspector to define what the base type is. The inspector will only show classes that are or inherit from the target type.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    public class TypeRestrictionAttribute : Attribute
     {
-        this.type = type;
+        public Type type;
+
+
+        public TypeRestrictionAttribute(Type type)
+        {
+            this.type = type;
+        }
     }
 }
+

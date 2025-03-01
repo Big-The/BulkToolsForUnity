@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: StateMachinesModule
   m_EditorClassIdentifier: 
   moduleName: State Machines
-  description: Includes a simple state machine class that can be used in most simple
+  description: Includes a simple state machine class that can be used in many simple
     state machine use cases.
   normalAssembly: Runtime/StateMachinesRuntime.asmdef
   editorAssembly: 
@@ -27,5 +27,7 @@ MonoBehaviour:
   - WebGL
   - WindowsStandalone64
   - XboxOne
-  dependencies: []
+  internalDependencies: []
+  externalDependencies: []
+  defineSettings: []
   experimental: 1

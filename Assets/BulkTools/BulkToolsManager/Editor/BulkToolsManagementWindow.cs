@@ -489,7 +489,7 @@ namespace BTools.Management.EditorScripts
                         assemPath: finalNormalAssemPath,
                         assembly: normalAssem,
                         moduleMeta: module,
-                        isEditorOnly: true,
+                        isEditorOnly: false,
                         enabled: moduleEnabled[moduleIndex],
                         curEnabledPlatforms: enabledPlatforms[moduleIndex]
                         );

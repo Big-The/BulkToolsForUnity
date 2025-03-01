@@ -44,6 +44,10 @@ namespace BTools.ObjectPooling
             }
         }
 
+        /// <summary>
+        /// Get the next object from the pool
+        /// </summary>
+        /// <returns></returns>
         public GameObject PullFromPool()
         {
             if (activeIDs.Count == pool.Count)//check if the pool is fully used
@@ -126,6 +130,9 @@ namespace BTools.ObjectPooling
             po.myPool.inactiveIDs.Add(po.poolObjectID);
         }
 
+        /// <summary>
+        /// Makes sure the pool is properly populated
+        /// </summary>
         public void ValidatePool()
         {
             for (int i = 0; i < pool.Count; i++)
@@ -138,12 +145,12 @@ namespace BTools.ObjectPooling
             }
         }
 
-        public void ReplaceObjectAt(int id)
-        {
-            pool[id] = CreateNewObject(id);
-        }
-
-        private GameObject CreateNewObject(int poolObjectID)
+        /// <summary>
+        /// Creates a new GameObject and places it into the pool at the specified index
+        /// </summary>
+        /// <param name="poolObjectID"></param>
+        /// <returns></returns>
+        internal GameObject CreateNewObject(int poolObjectID)
         {
             GameObject newGO = Instantiate(pooledObjectPrefab, transform);
             newGO.SetActive(false);

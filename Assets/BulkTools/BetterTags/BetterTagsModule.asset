@@ -27,5 +27,7 @@ MonoBehaviour:
   - WebGL
   - WindowsStandalone64
   - XboxOne
-  dependencies: []
+  internalDependencies: []
+  externalDependencies: []
+  defineSettings: []
   experimental: 0
