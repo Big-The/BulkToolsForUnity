@@ -1,4 +1,4 @@
-# Singleton Tools Module
+# State Machines Module
 
 ## About
 Includes a simple state machine class that can be used in many simple state machine use cases.

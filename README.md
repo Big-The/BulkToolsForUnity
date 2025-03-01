@@ -21,7 +21,7 @@ This package contains the following modules. More information can be found in in
 - [SimpleEditorTools](Assets/BulkTools/SimpleEditorTools/SimpleEditorTools.md)
 - [SingletonTools](Assets/BulkTools/SingletonTools/SingletonTools.md)
 - [StateMachines](Assets/BulkTools/StateMachines/StateMachines.md)
-- [StaticTools](Assets/BulkTools/StateMachines/StateMachines.md)
+- [StaticTools](Assets/BulkTools/StaticTools/StaticTools.md)
 - [UtilPack](Assets/BulkTools/UtilPack/UtilPack.md)
 
 # Suported Unity Version
