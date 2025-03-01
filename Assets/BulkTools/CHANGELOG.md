@@ -3,7 +3,6 @@
 ## [0.1.0]
 
 ### Fixes:
-- Fixed non editor assemblies platform settings being set as editor only no matter the config
 - Fixed some missing and inaccurate descriptions
 - Fixed internal assembly system treating all assemblies as editor assemblies preventing any builds, and in some cases basic functionality. 
 
