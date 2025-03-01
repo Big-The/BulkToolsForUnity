@@ -8,7 +8,7 @@
 
 ### Added:
 - Added READMEs to all modules
-- Added serializeable types to the UtilPack module
+- Added serializable types to the UtilPack module
 
 
 
