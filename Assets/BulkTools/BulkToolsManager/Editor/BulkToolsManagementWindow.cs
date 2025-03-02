@@ -156,7 +156,7 @@ namespace BTools.Management.EditorScripts
             //Platform specific enabled states:
             if (module.normalAssembly.Length > 0)
             {
-                platformsShown[moduleIndex] = EditorGUILayout.Foldout(platformsShown[moduleIndex], new GUIContent("Include on Platforms:", "Platforms that this module should be included on."));
+                platformsShown[moduleIndex] = EditorGUILayout.Foldout(platformsShown[moduleIndex], new GUIContent("Include on Platforms:", "Platforms that this module should be included on."), true);
                 EditorGUI.BeginDisabledGroup(!moduleEnabled[moduleIndex]);//If the whole module is disabled it's platforms can't be modified
                 if (platformsShown[moduleIndex])
                 {
@@ -180,7 +180,7 @@ namespace BTools.Management.EditorScripts
             //Define Settings
             if (module.defineSettings.Count > 0 && (module.normalAssembly.Length > 0 || module.editorAssembly.Length > 0))
             {
-                defineSettingsShown[moduleIndex] = EditorGUILayout.Foldout(defineSettingsShown[moduleIndex], new GUIContent("Global Settings:"));
+                defineSettingsShown[moduleIndex] = EditorGUILayout.Foldout(defineSettingsShown[moduleIndex], new GUIContent("Global Settings:"), true);
                 if (defineSettingsShown[moduleIndex])
                 {
                     EditorGUI.indentLevel++;
@@ -496,7 +496,6 @@ namespace BTools.Management.EditorScripts
                 }
             }
             ApplyToProjectSettings();
-            AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
 
@@ -629,6 +628,16 @@ namespace BTools.Management.EditorScripts
                         defines.Add(modules[moduleIndex].defineSettings[defineIndex].defineSymbol);
                         modified = true;
                     }
+                }
+                if (defines.Contains(modules[moduleIndex].name) && !moduleEnabled[moduleIndex]) 
+                {
+                    defines.Remove(modules[moduleIndex].name);
+                    modified = true;
+                }
+                if (!defines.Contains(modules[moduleIndex].name) && moduleEnabled[moduleIndex])
+                {
+                    defines.Add(modules[moduleIndex].name);
+                    modified = true;
                 }
             }
             if (modified)

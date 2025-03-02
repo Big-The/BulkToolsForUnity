@@ -1,5 +1,17 @@
 # Changes:
 
+## [0.1.1]
+
+### Added:
+- Added Array Duplicate to Simple Editor Tools module
+- Added define symbols for each module when enabled
+
+### Fixed:
+- Removed unneeded AssetDatabase.SaveAssets() call that seemed to be triggering odd internal editor file copy errors
+- All foldouts in main management window now toggle on label click
+
+
+
 ## [0.1.0]
 
 ### Fixes:
