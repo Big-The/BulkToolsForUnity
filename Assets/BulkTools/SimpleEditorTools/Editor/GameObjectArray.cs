@@ -56,13 +56,13 @@ namespace BTools.SimpleEditorTools
 
             EditorGUI.BeginChangeCheck();
 
+            objectCount = EditorGUILayout.Vector3IntField("Count", objectCount);
+            Vector3IntMinLimiter(ref objectCount);
+            EditorGUILayout.Space();
+
             EditorGUILayout.LabelField("Offsets:");
             objectOffset = EditorGUILayout.Vector3Field("Object", objectOffset);
             arrayOffset = EditorGUILayout.Vector3Field("Array", arrayOffset);
-            EditorGUILayout.Space();
-
-            objectCount = EditorGUILayout.Vector3IntField("Count", objectCount);
-            Vector3IntMinLimiter(ref objectCount);
             EditorGUILayout.Space();
 
             if (EditorGUI.EndChangeCheck()) 
