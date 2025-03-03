@@ -6,9 +6,14 @@
 - Added Array Duplicate to Simple Editor Tools module
 - Added define symbols for each module when enabled
 
+### Updated
+- Switched Simple State Machines to follow the Builder Method pattern
+  - Updated StateMachines Module readme with new builder pattern example
+
 ### Fixed:
 - Removed unneeded AssetDatabase.SaveAssets() call that seemed to be triggering odd internal editor file copy errors
 - All foldouts in main management window now toggle on label click
+- Fixed Simple State Machine AddState method checking if the state was already present being inverted
 
 ### Removed:
 - Removed "Coroutines With Results" from UtilPack.
