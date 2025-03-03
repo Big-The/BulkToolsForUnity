@@ -17,8 +17,7 @@ MonoBehaviour:
     put any tools that seem to small to bother with giving them their own module.\r\nIt
     includes multiple simple util extension methods, and variable types.\r\nExpanded
     systems include: \r\n- List Extensions (Shuffling)\r\n- RandomExtras (Sequences,
-    Weighted Random)\r\n- Coroutines With Results\r\n- SerializableTypes (Type selection
-    in the inspector)"
+    Weighted Random)\r\r\n- SerializableTypes (Type selection in the inspector)"
   normalAssembly: Runtime/UtilPackRuntime.asmdef
   editorAssembly: Editor/UtilPackEditor.asmdef
   supportedPlatforms:

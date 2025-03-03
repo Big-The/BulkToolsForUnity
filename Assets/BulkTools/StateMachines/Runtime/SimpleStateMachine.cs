@@ -41,13 +41,13 @@ namespace BTools.StateMachines
         /// <param name="stateAction">Action to perform durring run when the state is active</param>
         /// <exception cref="InvalidStateException"></exception>
         /// <exception cref="StateAlreadyExistsException"></exception>
-        public void AddState(string stateName, StateAction stateAction)
+        public SimpleStateMachine AddState(string stateName, StateAction stateAction)
         {
             if (stateAction == null) { throw new InvalidStateException(); }
-            if (!states.TryAdd(stateName, stateAction))
+            if (states.TryAdd(stateName, stateAction))
             {
                 transitions.Add(stateName, new List<Transition>());
-                return;
+                return this;
             }
             throw new StateAlreadyExistsException();
         }
@@ -75,11 +75,23 @@ namespace BTools.StateMachines
         /// </summary>
         /// <param name="transition">The transition to add</param>
         /// <exception cref="InvalidStateException"></exception>
-        public void AddTransition(Transition transition) 
+        public SimpleStateMachine AddTransition(Transition transition)
         {
             if (transition == null || transition.transitionTest == null) { throw new InvalidStateException(); };
             if (!states.ContainsKey(transition.fromState) && !states.ContainsKey(transition.toState)) { throw new InvalidStateException(); }
             transitions[transition.fromState].Add(transition);
+            return this;
+        }
+
+        /// <summary>
+        /// Add a transition to the state machine.
+        /// </summary>
+        /// <param name="transition">The transition to add</param>
+        /// <exception cref="InvalidStateException"></exception>
+        public SimpleStateMachine AddTransition(string fromState, string toState, Transition.TransitionTest transitionTest)
+        {
+            Transition transition = new Transition(fromState, toState, transitionTest);
+            return AddTransition(transition);
         }
 
         /// <summary>
@@ -120,7 +132,7 @@ namespace BTools.StateMachines
         /// </summary>
         /// <param name="boolName"></param>
         /// <param name="value"></param>
-        public void SetBool(string boolName, bool value)
+        public SimpleStateMachine SetBool(string boolName, bool value)
         {
             if (boolValues.ContainsKey(boolName))
             {
@@ -130,6 +142,7 @@ namespace BTools.StateMachines
             {
                 boolValues.Add(boolName, value);
             }
+            return this;
         }
 
         /// <summary>
@@ -151,7 +164,7 @@ namespace BTools.StateMachines
         /// </summary>
         /// <param name="intName"></param>
         /// <param name="value"></param>
-        public void SetInt(string intName, int value)
+        public SimpleStateMachine SetInt(string intName, int value)
         {
             if (intValues.ContainsKey(intName))
             {
@@ -161,6 +174,7 @@ namespace BTools.StateMachines
             {
                 intValues.Add(intName, value);
             }
+            return this;
         }
 
         /// <summary>
@@ -182,7 +196,7 @@ namespace BTools.StateMachines
         /// </summary>
         /// <param name="floatName"></param>
         /// <param name="value"></param>
-        public void SetFloat(string floatName, float value)
+        public SimpleStateMachine SetFloat(string floatName, float value)
         {
             if (floatValues.ContainsKey(floatName))
             {
@@ -192,6 +206,7 @@ namespace BTools.StateMachines
             {
                 floatValues.Add(floatName, value);
             }
+            return this;
         }
 
         /// <summary>

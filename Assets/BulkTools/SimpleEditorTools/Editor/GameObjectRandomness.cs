@@ -29,7 +29,7 @@ namespace BTools.SimpleEditorTools
         [MenuItem("GameObject/Simple Editor Tools/Randomize Objects")]
         public static void RandomizeObjects(MenuCommand command)
         {
-            if (((GameObject)command.context) != Selection.gameObjects[0]) { return; }
+            if (command.context != Selection.gameObjects[0]) { return; }
             transforms.Clear();
             foreach (GameObject go in Selection.gameObjects) 
             {
@@ -67,6 +67,8 @@ namespace BTools.SimpleEditorTools
             EditorGUILayout.LabelField("Object Randomization", EditorStyles.boldLabel);
             EditorGUILayout.Space();
 
+            EditorGUI.BeginChangeCheck();
+
             randomSeed = EditorGUILayout.IntField("Seed", randomSeed);
             EditorGUILayout.Space();
 
@@ -95,12 +97,16 @@ namespace BTools.SimpleEditorTools
             EditorGUILayout.Space();
 
 
-            ApplyChanges();
+            if (EditorGUI.EndChangeCheck())
+            {
+                ApplyChanges();
+            }
 
 
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Apply", GUILayout.Width(60)))
             {
+                ApplyChanges();
                 applied = true;
                 editorWindow.Close();
             }

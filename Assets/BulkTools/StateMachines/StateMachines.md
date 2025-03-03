@@ -11,16 +11,14 @@ All
 private SimpleStateMachine stateMachine;
 private void Awake()
 {
-    //StateMachine state setup:
-    stateMachine = new SimpleStateMachine("EvenState", EvenState);//The state passed into the constructor is the default state
-    stateMachine.AddState("OddState", OddState);
-    
+    //StateMachine state setup following the Builder Method pattern:
+    stateMachine = new SimpleStateMachine("EvenState", EvenState)//The state passed into the constructor is the default state
+        .AddState("OddState", OddState)
     //Vars:
-    stateMachine.SetFloat("time", Time.timeSinceLevelLoad);
-
+        .SetFloat("time", Time.timeSinceLevelLoad)
     //Transitions:
-    sateMachine.AddTransition(new SimpleStateMachine.Transition("EvenState", "OddState", EvenToOddTransition));
-    sateMachine.AddTransition(new SimpleStateMachine.Transition("OddState", "EvenState", OddToEvenTransition));
+        .AddTransition("EvenState", "OddState", EvenToOddTransition)
+        .AddTransition("OddState", "EvenState", OddToEvenTransition);
 }
 
 private void Update()
