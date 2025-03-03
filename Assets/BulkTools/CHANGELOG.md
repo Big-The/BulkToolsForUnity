@@ -10,7 +10,9 @@
 - Removed unneeded AssetDatabase.SaveAssets() call that seemed to be triggering odd internal editor file copy errors
 - All foldouts in main management window now toggle on label click
 
-
+### Removed:
+- Removed "Coroutines With Results" from UtilPack.
+  - Found some issues with the implementation that make the feature impractical. Skipping deprecation due to being in pre 1.0.0 version.
 
 ## [0.1.0]
 
