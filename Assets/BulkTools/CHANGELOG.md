@@ -12,7 +12,10 @@
 
 ### Removed:
 - Removed "Coroutines With Results" from UtilPack.
-  - Found some issues with the implementation that make the feature impractical. Skipping deprecation due to being in pre 1.0.0 version.
+  - Found some issues with the implementation that make the feature impractical. 
+  - Skipping normal deprecation steps due to being in pre 1.0.0 version.
+
+
 
 ## [0.1.0]
 
