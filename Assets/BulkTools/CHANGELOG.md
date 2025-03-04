@@ -1,5 +1,15 @@
 # Changes:
 
+## [0.1.2]
+
+### Added:
+- Added simple singleton behaviour to the singlton module
+
+### Fixed:
+- Fixed forced singleton allowing new instances to be created during application shutdown/playmode end
+
+
+
 ## [0.1.1]
 
 ### Added:
