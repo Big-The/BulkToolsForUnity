@@ -6,7 +6,7 @@ using UnityEngine;
 namespace BTools.MagicEvents
 {
     /// <summary>
-    /// Built for convenience not speed
+    /// MagicEvents provide a simple way to connect systems together without any direct references
     /// </summary>
     public class MagicEvent
     {
@@ -23,7 +23,7 @@ namespace BTools.MagicEvents
         private static bool waitingOnInvoke = false;
 
         /// <summary>
-        /// 
+        /// Subscribes a callback to the target eventName
         /// </summary>
         /// <param name="eventName">Leave empty to catch all events</param>
         /// <param name="callback"></param>
@@ -42,7 +42,7 @@ namespace BTools.MagicEvents
         }
 
         /// <summary>
-        /// 
+        /// Unsubscribes a callback from the target eventName
         /// </summary>
         /// <param name="eventName"></param>
         /// <param name="callback"></param>
@@ -67,9 +67,14 @@ namespace BTools.MagicEvents
         private string name = string.Empty;
         private MagicEventContext context;
 
+        /// <summary>
+        /// Creates a new MagicEvent call to be prepared and invoked. Call .Invoke() on this object to finalize the event.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <exception cref="MissingNameException"></exception>
         public MagicEvent(string name)
         {
-            if (name == "")
+            if (name == "" || name == null)
             {
                 throw new MissingNameException();
             }
@@ -188,23 +193,38 @@ namespace BTools.MagicEvents
         }
 #endregion
 
+        /// <summary>
+        /// Thrown when a data object is added to an event under the same id as a previously added piece of data
+        /// </summary>
         public class DataAlreadyExistsWithIDException : System.Exception
         {
             public DataAlreadyExistsWithIDException(string id, object value) : base($"Can not add data({value}) with ID:({id}) as the id is already in use.") { }
         }
 
+
+        /// <summary>
+        /// Thrown when a MagicEvent is created with a blank or null name
+        /// </summary>
         public class MissingNameException : System.Exception
         {
             public MissingNameException() : base("Can not create an event with no name.") { }
         }
-
-
     }
 
+    /// <summary>
+    /// Contains the data added to the event when it was prepared.
+    /// </summary>
     public struct MagicEventContext
     {
-        public string eventName;
+        public string eventName { get; internal set; } //switched from basic variable to a property, kept camelCase for backwards compatabilty.
         internal Dictionary<string, object> data;
+
+        /// <summary>
+        /// Retrieves the data stored at the target id as T. If there is no data at the ID or it's type does not match T then it will return the default value of T.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataID"></param>
+        /// <returns></returns>
         public T GetData<T>(string dataID)
         {
             if (data == null) { return default(T); }
