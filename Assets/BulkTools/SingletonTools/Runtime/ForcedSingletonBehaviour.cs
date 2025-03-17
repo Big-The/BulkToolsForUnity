@@ -30,6 +30,7 @@ namespace BTools.Singletons
         /// <typeparam name="C"></typeparam>
         private static void CreateInstance<C>() where C : MonoBehaviour
         {
+            if (SingletonInitializer.ApplicationQuitting) { return; } //Prevent a new instance if we are shutting down
             GameObject obj = new GameObject(typeof(C).Name);
             DontDestroyOnLoad(obj);
             obj.AddComponent<C>();
@@ -55,8 +56,11 @@ namespace BTools.Singletons
     /// <summary>
     /// Initializes all forced singletons
     /// </summary>
-    public static class SingletonInitializer
+    internal static class SingletonInitializer
     {
+        //Used to determine if a new instance should be created when accessing an Instance variable
+        internal static bool ApplicationQuitting { get; private set; }
+
         /// <summary>
         /// Some of the starting strings of assemblies I see often included in projects that should never include one of the targeted singletons
         /// </summary>
@@ -122,6 +126,15 @@ namespace BTools.Singletons
             GameObject obj = new GameObject(type.Name);
             GameObject.DontDestroyOnLoad(obj);
             obj.AddComponent(type);
+        }
+
+        /// <summary>
+        /// Subscribes callback for setting ApplicationQuitting
+        /// </summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        private static void PreventInstanceInShutdownInit()
+        {
+            Application.quitting += () => { ApplicationQuitting = true; };
         }
     }
 }

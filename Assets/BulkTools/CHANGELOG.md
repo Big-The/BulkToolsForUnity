@@ -1,5 +1,18 @@
 # Changes:
 
+## [0.1.2]
+
+### Added:
+- Added simple singleton behaviour to the singlton module
+
+### Fixed:
+- Fixed forced singleton allowing new instances to be created during application shutdown/playmode end
+- Added missing null check to MagicEvent constructor name parameter
+- Enforced readonly nature of eventName in MagicEventContext
+- Changed List Shuffler logic.
+
+
+
 ## [0.1.1]
 
 ### Added:
