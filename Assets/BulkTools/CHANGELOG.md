@@ -7,6 +7,9 @@
 
 ### Fixed:
 - Fixed forced singleton allowing new instances to be created during application shutdown/playmode end
+- Added missing null check to MagicEvent constructor name parameter
+- Enforced readonly nature of eventName in MagicEventContext
+- Changed List Shuffler logic.
 
 
 
