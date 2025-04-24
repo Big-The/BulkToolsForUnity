@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace BTools.StateMachines 
 {
+    /// <summary>
+    /// SimpleStateMachine provides a simple structure to build a state machine without any extra object types
+    /// </summary>
     public class SimpleStateMachine
     {
         /// <summary>
