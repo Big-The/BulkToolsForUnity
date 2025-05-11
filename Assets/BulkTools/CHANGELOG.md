@@ -1,5 +1,16 @@
 # Changes:
 
+## [0.1.3]
+
+### Added:
+- Added new class based state machine
+  - Uses objects instead of methods for states
+  - Enforces use of transitions
+
+### Fixed:
+- Removed a erroneous using statement from the MagicEvents module
+
+
 ## [0.1.2]
 
 ### Added:
